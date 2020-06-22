@@ -12,9 +12,9 @@ scalaVersion := "2.12.2"
 
 libraryDependencies ++= Seq( jdbc , ehcache , ws , specs2 % Test , guice )
 
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0" % "test"
+libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % "test"
 
 
 
-unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
+unmanagedResourceDirectories in Test +=   baseDirectory.value / "target/web/public/test"
 
