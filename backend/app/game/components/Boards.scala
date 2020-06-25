@@ -11,13 +11,14 @@
 
 package game.components
 
+import game.managers.MovementManager
+
 /**
  * Class representing all the boards in a game
  *
- * @param nrPlanes  number of distinct planes (boards) to have
- * @param boardSize size of one side of the board (in normal chess the value would be 8)
+ * @param movementManager The movement Manager of the game
  */
-case class Boards(nrPlanes: Int, boardSize: Int) {
+case class Boards(movementManager: MovementManager) {
   var boards: Seq[Piece] = Seq.empty[Piece]
 
   /**
@@ -25,7 +26,7 @@ case class Boards(nrPlanes: Int, boardSize: Int) {
    * @param target position to check in the board (x,y,z), where z is the board
    */
   def pieceAt(target: Point3D): Option[Piece] = {
-    if (target.isOutOfBounds(this))
+    if (target.isOutOfBounds(movementManager))
       None
     else
       boards.find(piece => piece.position.equals(target))

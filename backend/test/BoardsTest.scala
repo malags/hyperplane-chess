@@ -10,7 +10,9 @@
  */
 
 import game.components.{Boards, Piece, Player, Point3D, Type}
+import game.managers.MovementManager
 import org.scalatestplus.play.PlaySpec
+import play.api.libs.json.{JsValue, Json}
 
 
 class BoardsTest extends PlaySpec {
@@ -18,12 +20,23 @@ class BoardsTest extends PlaySpec {
   val player: Player = Player(0, 0)
   val type_t: Type = Type("")
 
+  val jsonString: JsValue = Json.parse(
+    """{
+          "pieces": [
+            {
+              "name": "TEST_PIECE",
+              "image": "nice image",
+              "moveset": "(0,1,0),(1,1,0)"
+            }
+          ]
+         }"""
+  )
+  val movementManager: MovementManager = MovementManager(nrPlanes = 2, boardSize = 8, jsonString)
+
 
   "new board" should {
     "be empty" in {
-      val boards = Boards(nrPlanes = 2, boardSize = 8)
-      boards.nrPlanes mustBe 2
-      boards.boardSize mustBe 8
+      val boards = Boards(movementManager)
       for (x <- 0 to 8)
         for (y <- 0 to 8)
           for (z <- 0 to 2)
@@ -33,9 +46,7 @@ class BoardsTest extends PlaySpec {
 
   "new board then add piece" should {
     "contain piece" in {
-      val boards = Boards(nrPlanes = 2, boardSize = 8)
-      boards.nrPlanes mustBe 2
-      boards.boardSize mustBe 8
+      val boards = Boards(movementManager)
 
       val position = Point3D(x = 1, y = 2, z = 1)
       val piece = Piece(player, type_t, position)
@@ -48,9 +59,7 @@ class BoardsTest extends PlaySpec {
 
   "new board then add piece then move" should {
     "move piece" in {
-      val boards = Boards(nrPlanes = 2, boardSize = 8)
-      boards.nrPlanes mustBe 2
-      boards.boardSize mustBe 8
+      val boards = Boards(movementManager)
 
       val startPosition = Point3D(x = 1, y = 2, z = 1)
       val endPosition = Point3D(x = 1, y = 2, z = 0)

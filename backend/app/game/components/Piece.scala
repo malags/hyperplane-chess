@@ -35,6 +35,7 @@ case class Piece(player: Player, pieceType: Type, position: Point3D) {
    * @return set of positions in which we could move the Piece
    */
   def availableMoves(game: Game): Set[Point3D] = {
+    // TODO: add facing direction to mirror, currently absolute direction (requires 2 complementary moveset)
     val loop = new Breaks
     val moveset: Array[Direction] = game.movementManager.getMoveset(this)
     var availableMoves = Set.empty[Point3D]
@@ -45,7 +46,7 @@ case class Piece(player: Player, pieceType: Type, position: Point3D) {
         loop.breakable {
           // check points inside direction
           for (point <- direction.dir) {
-            val targetPosition = position.add(point, game.boards)
+            val targetPosition = position.add(point, game.movementManager)
             val piece = game.pieceAt(targetPosition)
             if (piece.isEmpty || this.isEnemy(piece.get.player))
               availableMoves += targetPosition

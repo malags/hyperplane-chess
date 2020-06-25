@@ -12,6 +12,7 @@
 package game.components
 
 import game.managers.MovementManager
+import play.api.libs.json.JsValue
 
 /**
  * Class representing the game state, all boards in the game have the same size
@@ -20,9 +21,9 @@ import game.managers.MovementManager
  * @param nrPlanes  number of boards in the game
  * @param boardSize size of the side of the board
  */
-class Game(players: Array[Player], nrPlanes: Int, boardSize: Int) {
-  val boards: Boards = Boards(nrPlanes = nrPlanes, boardSize = boardSize)
-  val movementManager: MovementManager = new MovementManager(null)
+class Game(players: Array[Player], nrPlanes: Int, boardSize: Int, movementFile: JsValue) {
+  val movementManager: MovementManager = MovementManager(nrPlanes = nrPlanes, boardSize = boardSize, movementJson = movementFile)
+  val boards: Boards = Boards(movementManager = movementManager)
   val nrPlayers: Int = players.length
   var turnId: Int = 0
 

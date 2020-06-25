@@ -11,6 +11,9 @@
 
 package game.components
 
+import game.managers.MovementManager
+
+
 /**
  *
  * @param x the x position in the Board [0, boardSize]
@@ -22,20 +25,20 @@ case class Point3D(x: Int, y: Int, z: Int) {
   /**
    * Add a direction to the current Point3D to obtain a Point3D shifted in direction dir
    *
-   * @param dir    direction in which to move the point
-   * @param boards game Boards
+   * @param dir             direction in which to move the point
+   * @param movementManager game MovementManager
    * @return this point moved in direction dir
    */
-  def add(dir: Point3D, boards: Boards): Point3D = Point3D(
+  def add(dir: Point3D, movementManager: MovementManager): Point3D = Point3D(
     x + dir.x,
     y + dir.y,
     // inner % scales back to single loop, + handles negative, outer % scales back to range from negative handling
-    (z + (dir.z % boards.nrPlanes) + boards.nrPlanes) % boards.nrPlanes)
+    (z + (dir.z % movementManager.nrPlanes) + movementManager.nrPlanes) % movementManager.nrPlanes)
 
-  def isOutOfBounds(boards: Boards): Boolean = {
-    x >= boards.boardSize ||
-      y >= boards.boardSize ||
-      z >= boards.nrPlanes ||
+  def isOutOfBounds(movementManager: MovementManager): Boolean = {
+    x >= movementManager.boardSize ||
+      y >= movementManager.boardSize ||
+      z >= movementManager.nrPlanes ||
       x < 0 ||
       y < 0 ||
       z < 0
