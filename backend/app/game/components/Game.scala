@@ -55,4 +55,8 @@ class Game(players: Array[Player], nrPlanes: Int, boardSize: Int) {
   def pieceAt(position: Point3D): Option[Piece] = boards.pieceAt(position)
 
 
+  /**
+   * update turnId to match next player
+   */
+  def endTurn(): Unit = turnId = (turnId + 1) % nrPlayers
 }
