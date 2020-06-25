@@ -45,10 +45,10 @@ case class Piece(player: Player, pieceType: Type, position: Point3D) {
         loop.breakable {
           // check points inside direction
           for (point <- direction.dir) {
-            // targetPosition
-            val piece = game.pieceAt(position.add(point, game.boards))
+            val targetPosition = position.add(point, game.boards)
+            val piece = game.pieceAt(targetPosition)
             if (piece.isEmpty || this.isEnemy(piece.get.player))
-              availableMoves += point
+              availableMoves += targetPosition
             else
               loop.break
           }

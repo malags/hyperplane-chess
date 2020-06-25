@@ -18,7 +18,7 @@ class MovementManager(movementFile: Object) {
   init()
 
   def init() {
-    //TODO configure various pieces according to to be defined format
+    //TODO configure various pieces according to the to be defined format
     movementMap = movementMap + (
       Type("none") -> Array(
         Direction(Array(Point3D(0, 1, 0))))
