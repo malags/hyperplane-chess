@@ -12,6 +12,8 @@
 package game.components
 
 
+import game.components.Facing.Facing
+
 import scala.util.control._
 
 /**
@@ -20,7 +22,7 @@ import scala.util.control._
  * @param pieceType String representing the type of the Piece (i.e. King, Knight)
  * @param position  the current position of the Piece
  */
-case class Piece(player: Player, pieceType: Type, position: Point3D) {
+case class Piece(player: Player, pieceType: Type, position: Point3D, facing: Facing) {
   /**
    * given a target player returns whether pieces of the target player could be eaten by the current piece
    *
@@ -35,7 +37,6 @@ case class Piece(player: Player, pieceType: Type, position: Point3D) {
    * @return set of positions in which we could move the Piece
    */
   def availableMoves(game: Game): Set[Point3D] = {
-    // TODO: add facing direction to mirror, currently absolute direction (requires 2 complementary moveset)
     val loop = new Breaks
     val moveset: Array[Direction] = game.movementManager.getMoveset(this)
     var availableMoves = Set.empty[Point3D]
@@ -46,7 +47,8 @@ case class Piece(player: Player, pieceType: Type, position: Point3D) {
         loop.breakable {
           // check points inside direction
           for (point <- direction.dir) {
-            val targetPosition = position.add(point, game.movementManager)
+            // convert target direction to absolute reference system
+            val targetPosition = position.add(point.toAbsolute(facing), game.movementManager)
             val piece = game.pieceAt(targetPosition)
             if (piece.isEmpty || this.isEnemy(piece.get.player))
               availableMoves += targetPosition

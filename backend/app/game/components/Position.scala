@@ -11,6 +11,7 @@
 
 package game.components
 
+import game.components.Facing.Facing
 import game.managers.MovementManager
 
 
@@ -43,6 +44,17 @@ case class Point3D(x: Int, y: Int, z: Int) {
       y < 0 ||
       z < 0
   }
+
+  /**
+   * Converts a relative direction to an absolute one
+   *
+   * @param facing direction the piece is pacing one of UP, DOWN
+   * @return the absolute direction +-current value, z unchanged
+   */
+  def toAbsolute(facing: Facing): Point3D = {
+    val multiplier = if (facing == Facing.UP) -1 else 1
+    Point3D(x * multiplier, y * multiplier, z)
+  }
 }
 
 /**
@@ -50,3 +62,12 @@ case class Point3D(x: Int, y: Int, z: Int) {
  * @param dir an array of Point3D following a direction, size >= 1
  */
 case class Direction(dir: Array[Point3D])
+
+
+/**
+ * Enumeration for the direction a Piece is looking at
+ */
+object Facing extends Enumeration {
+  type Facing = Value
+  val UP, DOWN = Value
+}

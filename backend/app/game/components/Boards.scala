@@ -47,7 +47,11 @@ case class Boards(movementManager: MovementManager) {
    */
   def movePiece(start: Point3D, target: Point3D): Unit = {
     val pieceToMove = pieceAt(start).get
-    val movingPiece = Piece(player = pieceToMove.player, pieceType = pieceToMove.pieceType, position = target)
+    val movingPiece = Piece(
+      player = pieceToMove.player,
+      pieceType = pieceToMove.pieceType,
+      position = target,
+      facing = pieceToMove.facing)
 
     // remove pieces in start and target position, then add update piece
     boards = boards.filter(

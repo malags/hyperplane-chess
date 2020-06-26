@@ -1,4 +1,4 @@
-import game.components.{Game, Piece, Player, Point3D, Type}
+import game.components.{Facing, Game, Piece, Player, Point3D, Type}
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
 
@@ -10,8 +10,8 @@ class GameTest extends PlaySpec {
 
   val myPiecePos: Point3D = Point3D(5, 5, 0)
   val enemyPiecePos: Point3D = Point3D(5, 6, 0)
-  val myPiece: Piece = Piece(player, type_t, myPiecePos)
-  val enemyPiece: Piece = Piece(opponent, type_t, enemyPiecePos)
+  val myPiece: Piece = Piece(player, type_t, myPiecePos, Facing.DOWN)
+  val enemyPiece: Piece = Piece(opponent, type_t, enemyPiecePos, Facing.UP)
   val movementFile: JsValue = Json.parse(
     """{
           "pieces": [

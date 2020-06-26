@@ -1,4 +1,4 @@
-import game.components.{Boards, Point3D}
+import game.components.{Boards, Direction, Facing, Point3D}
 import game.managers.MovementManager
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
@@ -95,6 +95,12 @@ class PositionTest extends PlaySpec {
   }
 
   "a Point3D" should {
+
+    "convert to absolute reference system" in {
+      Point3D(1, 1, 1).toAbsolute(Facing.UP) mustBe Point3D(-1, -1, 1)
+      Point3D(1, 1, 1).toAbsolute(Facing.DOWN) mustBe Point3D(1, 1, 1)
+    }
+
     "outOfBounds when position.value is negative" in {
 
       Point3D(-1, 0, 0).isOutOfBounds(movementManager) mustBe true

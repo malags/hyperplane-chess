@@ -9,7 +9,8 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import game.components.{Boards, Piece, Player, Point3D, Type}
+import game.components.Facing.Facing
+import game.components.{Boards, Facing, Piece, Player, Point3D, Type}
 import game.managers.MovementManager
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
@@ -19,6 +20,7 @@ class BoardsTest extends PlaySpec {
 
   val player: Player = Player(0, 0)
   val type_t: Type = Type("")
+  val facing: Facing = Facing.DOWN
 
   val jsonString: JsValue = Json.parse(
     """{
@@ -49,7 +51,7 @@ class BoardsTest extends PlaySpec {
       val boards = Boards(movementManager)
 
       val position = Point3D(x = 1, y = 2, z = 1)
-      val piece = Piece(player, type_t, position)
+      val piece = Piece(player, type_t, position, facing)
       boards.addPiece(piece)
 
       boards.pieceAt(position).isEmpty mustBe false
@@ -63,7 +65,7 @@ class BoardsTest extends PlaySpec {
 
       val startPosition = Point3D(x = 1, y = 2, z = 1)
       val endPosition = Point3D(x = 1, y = 2, z = 0)
-      val piece = Piece(player, type_t, startPosition)
+      val piece = Piece(player, type_t, startPosition, facing)
 
 
       boards.addPiece(piece)
@@ -78,7 +80,7 @@ class BoardsTest extends PlaySpec {
       boards.pieceAt(startPosition).isEmpty mustBe true
       // end position
       boards.pieceAt(endPosition).isEmpty mustBe false
-      boards.pieceAt(endPosition).get mustBe Piece(player, type_t, endPosition)
+      boards.pieceAt(endPosition).get mustBe Piece(player, type_t, endPosition, facing)
 
     }
   }
