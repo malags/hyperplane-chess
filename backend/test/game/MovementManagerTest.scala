@@ -1,4 +1,6 @@
-import game.components.{Boards, Direction, Facing, Piece, Player, Point3D, Type}
+package game
+
+import game.components._
 import game.managers.MovementManager
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}

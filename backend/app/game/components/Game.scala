@@ -11,7 +11,7 @@
 
 package game.components
 
-import game.managers.MovementManager
+import game.managers.{BoardConfigurator, MovementManager}
 import play.api.libs.json.JsValue
 
 /**
@@ -60,4 +60,25 @@ class Game(players: Array[Player], nrPlanes: Int, boardSize: Int, movementFile: 
    * update turnId to match next player
    */
   def endTurn(): Unit = turnId = (turnId + 1) % nrPlayers
+
+
+  def init(boardConfigurator: BoardConfigurator): Boolean = {
+    if (!boardConfigurator.verify(boards))
+      false
+    else {
+      boardConfigurator.initBoards(boards, players)
+      true
+    }
+  }
+
+  /**
+   * Expose movePiece method from boards
+   * Move piece regardless of whether the start/target position are free or occupied by any piece
+   *
+   * @param start  start position
+   * @param target end position
+   */
+  def movePiece(start: Point3D, target: Point3D): Unit = {
+    boards.movePiece(start, target)
+  }
 }

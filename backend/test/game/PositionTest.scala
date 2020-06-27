@@ -1,7 +1,9 @@
-import game.components.{Boards, Direction, Facing, Point3D}
+package game
+
+import game.components.{Boards, Facing, Point3D}
 import game.managers.MovementManager
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 
 
 class PositionTest extends PlaySpec {
