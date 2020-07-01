@@ -49,4 +49,25 @@ class GameServiceTest extends PlaySpec {
       piecesInBoard.nonEmpty mustBe false
     }
   }
+
+  "GameService" should {
+    "return the number of planes" in {
+      val result = GameService.newGame(players, nrPlanes = 2, boardSize = 6, movementFile, piecesPosition)
+      result mustBe 1
+      GameService.getNrPlanes(result) mustBe Some(2)
+    }
+
+    "return the boardSize" in {
+      val result = GameService.newGame(players, nrPlanes = 2, boardSize = 6, movementFile, piecesPosition)
+      result mustBe 2
+      GameService.getBoardSize(result) mustBe Some(6)
+    }
+
+    "delete Game" in {
+      GameService.remove(2)
+      GameService.getBoardSize(2) mustBe None
+      GameService.getNrPlanes(2) mustBe None
+      GameService.getPiecesInBoard(2) mustBe None
+    }
+  }
 }

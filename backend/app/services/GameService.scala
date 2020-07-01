@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 
 import game.components.{Game, Piece, Player, Point3D}
-import game.managers.{BoardConfigurator}
+import game.managers.BoardConfigurator
 import play.api.libs.json.JsValue
 
 
@@ -104,4 +104,31 @@ object GameService {
     case None => None
     case Some(game) => Some(game.boards.boards)
   }
+
+  /**
+   *
+   * @param gameId ID of the game as generated in newGame
+   * @return The nrPlanes relative to the game with gameId
+   */
+  def getNrPlanes(gameId: Long): Option[Int] = mapIdToGame.get(gameId) match {
+    case None => None
+    case Some(game) => Some(game.movementManager.nrPlanes)
+  }
+
+  /**
+   *
+   * @param gameId ID of the game as generated in newGame
+   * @return The boardSize relative to the game with gameId
+   */
+  def getBoardSize(gameId: Long): Option[Int] = mapIdToGame.get(gameId) match {
+    case None => None
+    case Some(game) => Some(game.movementManager.boardSize)
+  }
+
+  /**
+   * Remove the Game with specified id
+   *
+   * @param gameId Game to remove
+   */
+  def remove(gameId: Long): Unit = mapIdToGame.remove(gameId)
 }

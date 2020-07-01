@@ -57,6 +57,10 @@ case class Point3D(x: Int, y: Int, z: Int) {
   }
 }
 
+object Point3D {
+  def arrayToPoint3D(array: Array[Int]): Point3D = Point3D(array(0), array(1), array(2))
+}
+
 /**
  *
  * @param dir an array of Point3D following a direction, size >= 1

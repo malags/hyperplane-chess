@@ -4,9 +4,11 @@
 # ~~~~
 
 # Backend
+GET        /socket         websocket.GameController.socket(id: Long)
+GET        /newGame        websocket.GameController.newGame()
 
 
 # Frontend
-GET     /                           controllers.FrontendController.index()
+GET        /               controllers.FrontendController.index()
 # Serve static assets under public directory
-GET     /*file                      controllers.FrontendController.assetOrDefault(file)
+GET        /*file          controllers.FrontendController.assetOrDefault(file)
