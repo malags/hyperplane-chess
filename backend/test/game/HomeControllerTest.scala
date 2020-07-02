@@ -1,3 +1,5 @@
+package game
+
 /*
  * Copyright (c) 2020 Stefano Malagò
  * Copyright (c) 2013-2017 Mathew Groves, Chad Engler
@@ -12,7 +14,7 @@
 import org.scalatestplus.play.PlaySpec
 
 
-class HomeControllerSpec extends PlaySpec {
+class HomeControllerTest extends PlaySpec {
 
   "emptyTest" should {
     "return true" in {

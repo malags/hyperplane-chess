@@ -1,3 +1,5 @@
+package game
+
 /*
  * Copyright (c) 2020 Stefano Malagò
  * Copyright (c) 2013-2017 Mathew Groves, Chad Engler
@@ -10,7 +12,7 @@
  */
 
 import game.components.Facing.Facing
-import game.components.{Boards, Facing, Piece, Player, Point3D, Type}
+import game.components._
 import game.managers.MovementManager
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
