@@ -11,30 +11,30 @@
 
 import React, {Component} from "react";
 import ReactDOM from "react-dom";
+import Connection from "../classes/Connection"
 
-import Game from "./Game.jsx";
-
-class App extends Component {
+class Game extends Component {
     constructor(props) {
         super(props);
+        let connection = new Connection("ws://localhost:9000/socket?id=1")//new WebSocket(this.props.socket_url) //TODO change back
+        this.state = {
+            connection: connection
+        };
     }
 
-    newGame(e) {
-        console.log(e.target)
-    }
+    something = () =>  {
+        this.setState({add: "something"})
+        this.state.connection.send({command:"getGameStatus"})
+    };
 
     render() {
         return (
-            <div className="app-content">
-                <h1>Hello World!</h1>
-                <button onClick={this.newGame.bind(this)}>new Game</button>
-                <Game socket_url={window.location.href.replace("http", "ws") + "socket?id=" + 0}/> //TODO: change to dynamic
+            <div className="Game">
+                <p>Game</p>
+                <button onClick={this.something}>Websocket request</button>
             </div>
-        )
+        );
     }
 }
 
-export default App;
-
-const wrapper = document.getElementById("app");
-wrapper ? ReactDOM.render(<App/>, wrapper) : false;
+export default Game;

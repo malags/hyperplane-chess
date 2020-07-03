@@ -133,7 +133,8 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
    * remove self from MatchManager
    */
   override def postStop(): Unit = {
-    manager ! MatchManager.Remove(id, self)
+    //TODO: enable when testing over
+    //manager ! MatchManager.Remove(id, self)
   }
 
   /**

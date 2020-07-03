@@ -9,32 +9,29 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import React, {Component} from "react";
-import ReactDOM from "react-dom";
+/**
+ * Connection to the server with websocket
+ */
+class Connection {
+    constructor(socket_url) {
+        this.socket = new WebSocket(socket_url)
 
-import Game from "./Game.jsx";
-
-class App extends Component {
-    constructor(props) {
-        super(props);
+        this.socket.onopen = () => console.log("connected")
+        this.socket.onerror = () => console.log("websocket error")
+        this.socket.onclose = (message) => {
+            console.log(message.reason)
+            console.log("disconnected")}
+        this.socket.onmessage = (message) => this.messageHandler(message)
     }
 
-    newGame(e) {
-        console.log(e.target)
+    messageHandler(message){
+        let json = JSON.parse(message.data)
+        console.log(json)
     }
 
-    render() {
-        return (
-            <div className="app-content">
-                <h1>Hello World!</h1>
-                <button onClick={this.newGame.bind(this)}>new Game</button>
-                <Game socket_url={window.location.href.replace("http", "ws") + "socket?id=" + 0}/> //TODO: change to dynamic
-            </div>
-        )
+    send(message){
+        this.socket.send(JSON.stringify(message))
     }
 }
 
-export default App;
-
-const wrapper = document.getElementById("app");
-wrapper ? ReactDOM.render(<App/>, wrapper) : false;
+export default Connection
