@@ -15,23 +15,88 @@
 class Connection {
     constructor(socket_url) {
         this.socket = new WebSocket(socket_url)
-
         this.socket.onopen = () => console.log("connected")
         this.socket.onerror = () => console.log("websocket error")
         this.socket.onclose = (message) => {
             console.log(message.reason)
-            console.log("disconnected")}
+            console.log("disconnected")
+        }
         this.socket.onmessage = (message) => this.messageHandler(message)
+
+        this.keepAliveInterval = setInterval(function () {
+            if (this.socket.readyState === WebSocket.OPEN) {
+                console.log("ping")
+                this.socket.send(JSON.stringify({command: "ping"}))
+            }
+        }.bind(this), 50000);
+
     }
 
-    messageHandler(message){
+
+    messageHandler(message) {
         let json = JSON.parse(message.data)
-        console.log(json)
+        // submitMove / availableMoves / gameStatus
+        if (json.status) {
+            let command = json.command
+            switch (command) {
+                case "submitMove": // received move done
+                    console.log(json) //TODO actual action
+                    break
+                case "availableMoves":  // requested moves for some position
+                    console.log(json)
+                    break
+                case "gameStatus":
+                    console.log(json)
+                    break
+                default:
+                    console.log(json)
+            }
+        }
     }
 
-    send(message){
+    /**
+     * get available moves for piece at position
+     * @param pos position as json {x:1 , y:1, z:1}
+     * @param player the player
+     */
+    sendAvailMovesRequest(pos, player) {
+        this._send(
+            {
+                command: "getAvailableMoves",
+                data: {
+                    from: pos,
+                    player: player
+                }
+            }
+        )
+    }
+
+    sendMove(src, target, player) {
+        this._send(
+            {
+                command: "submitMove",
+                data: {
+                    from: src,
+                    to: target,
+                    player: player
+                }
+            }
+        )
+    }
+
+    sendGetGameStatus() {
+        this._send({command: "getGameStatus"})
+    }
+
+    _send(message) {
         this.socket.send(JSON.stringify(message))
     }
+
+    close() {
+        this.socket.close()
+        clearInterval(this.keepAliveInterval)
+    }
 }
+
 
 export default Connection

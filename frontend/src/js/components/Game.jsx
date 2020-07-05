@@ -12,26 +12,136 @@
 import React, {Component} from "react";
 import ReactDOM from "react-dom";
 import Connection from "../classes/Connection"
+import * as PIXI from 'pixi.js'
 
 class Game extends Component {
     constructor(props) {
         super(props);
         let connection = new Connection("ws://localhost:9000/socket?id=1")//new WebSocket(this.props.socket_url) //TODO change back
         this.state = {
-            connection: connection
-        };
+            connection: connection,
+            tile_size: 30,
+            selectedPos: null,
+            player: {
+                playerId: 0, groupId: 0
+            }
+        }
     }
 
-    something = () =>  {
+    componentDidMount() {
+        let type = "WebGL"
+        if (!PIXI.utils.isWebGLSupported()) {
+            type = "canvas"
+        }
+        PIXI.utils.sayHello(type)
+
+
+        let pixi = new PIXI.Application({
+            width: 900,
+            height: 900,
+            backgroundColor: 0x666666
+        })
+
+
+        //background empty image to handle clicks outside board
+        let bkg = new PIXI.Sprite(PIXI.Texture.EMPTY);
+        bkg.position.x = 0;
+        bkg.position.y = 0;
+        bkg.width = pixi.screen.width;
+        bkg.height = pixi.screen.height;
+        bkg.interactive = true
+        bkg.on("mousedown", () => this.setState({selectedPos: null}))
+        pixi.stage.addChild(bkg);
+
+        this.GView.appendChild(pixi.view)
+
+        this.setState({pixi: pixi})
+    }
+
+    something = () => {
         this.setState({add: "something"})
-        this.state.connection.send({command:"getGameStatus"})
+        this.state.connection.sendGetGameStatus()
+
+        this.drawNBoards(3, 9)
     };
+
+    drawNBoards(n, size) {
+        let center = this.state.pixi.screen.width / 2
+        let radius = 1.3 * center / 2 // TODO: needs tweaking boards may overlap, consider list of values for size/n
+        let dir = [0, -radius]
+
+        for (let part = 0; part < n; ++part) {
+            let v = this._rotateVector(dir, part * 360 / n)
+            let pos_x = center + v[0] - this.state.tile_size * size / 2
+            let pos_y = center + v[1] - this.state.tile_size * size / 2
+            this._drawBoard(pos_x, pos_y, size, part)
+        }
+    }
+
+    _rotateVector(vec, ang) {
+        ang = -ang * (Math.PI / 180);
+        let cos = Math.cos(ang);
+        let sin = Math.sin(ang);
+        return [Math.round(10000 * (vec[0] * cos - vec[1] * sin)) / 10000,
+            Math.round(10000 * (vec[0] * sin + vec[1] * cos)) / 10000]
+    };
+
+    _drawBoard(pos_x, pos_y, size, z) {
+
+        let tile_size = this.state.tile_size
+
+        for (let x = 0; x < size; ++x) {
+            for (let y = 0; y < size; ++y) {
+                this._addSquareAt(
+                    pos_x + tile_size * x,
+                    pos_y + tile_size * y,
+                    {x: x, y: y, z: z}
+                )
+            }
+        }
+    }
+
+    _addSquareAt(x, y, p) {
+        let square = new PIXI.Sprite(PIXI.Texture.WHITE);
+
+        square.tint = (p.x + p.y + p.z) % 2 === 0 ? 0xffffff : 0x000000
+        square.width = this.state.tile_size;
+        square.height = this.state.tile_size;
+
+        square.x = x
+        square.y = y
+
+        const point = p
+
+        let click = () => {
+            if (this.state.selectedPos != null) {
+                // submitMove
+                console.log("send move")
+                this.state.connection.sendMove(this.state.selectedPos, point, this.state.player)
+                this.setState({selectedPos: null})
+            } else {
+                console.log("selected")
+                // request available moves
+                this.setState({selectedPos: point})
+                this.state.connection.sendAvailMovesRequest(point, this.state.player)
+                console.log(point)
+            }
+        }
+
+        square.interactive = true
+        square.on('touchstart', click);
+        square.on("mousedown", click)
+        this.state.pixi.stage.addChild(square)
+    }
 
     render() {
         return (
             <div className="Game">
                 <p>Game</p>
                 <button onClick={this.something}>Websocket request</button>
+                <div ref={(el) => {
+                    this.GView = el
+                }}/>
             </div>
         );
     }

@@ -1,10 +1,21 @@
+/*
+ * Copyright (c) 2020 Stefano Malagò
+ * Copyright (c) 2013-2017 Mathew Groves, Chad Engler
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package websocket
 
 import akka.actor.{Actor, ActorRef, Props}
 import game.components.Facing
 import game.components.{Piece, Player, Point3D, Type}
 import play.api.Logger
-import play.api.libs.json.{JsError, JsPath, JsSuccess, JsValue, Json, Reads, Writes}
+import play.api.libs.json.{JsError, JsNull, JsPath, JsSuccess, JsValue, Json, Reads, Writes}
 import services.GameService
 import websocket.MatchManager.Moved
 
@@ -35,7 +46,7 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
 
   val logger: Logger = Logger(this.getClass)
   // inform manager of new actor
-  logger.info(s"new client with $id")
+  logger.info(s"new client with gameId=$id")
   manager ! MatchManager.NewClient(self, id)
 
 
@@ -49,17 +60,18 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
 
     // initial case
     case value: JsValue =>
-      val command = (value \ "command").get.as[String]
+      val command = (value \ "command").getOrElse(Json.toJson("No command in Json")).as[String]
       logger.info(command)
 
       command match {
         case "submitMove" => submitMoveAction(value)
         case "getAvailableMoves" => availableMovesAction(value)
         case "getGameStatus" => gameStatusAction()
-        case _ =>
+        case "ping" => out ! Json.obj("status" -> "pong")
+        case _ => logger.warn("unhandled message")
       }
 
-    case default => logger.error(s"unhandled in Receive $default")
+    case default: Any => logger.error(s"unhandled in Receive $default")
   }
 
   /**
@@ -71,10 +83,15 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
     logger.info("submitMoveAction")
     // do stuff
     val data = (request \ "data").get
-    val from = (data \ "from").get.as[Array[Int]]
-    val to = (data \ "to").get.as[Array[Int]]
+    val fromJs = Json.fromJson[Point3D]((data \ "from").get)
+    val toJs = Json.fromJson[Point3D]((data \ "to").get)
+    var status = false
 
-    val status = GameService.submitMove(id, Point3D.arrayToPoint3D(from), Point3D.arrayToPoint3D(to), Player(0, 0))
+    (fromJs, toJs) match {
+      case (JsSuccess(from, _), JsSuccess(to, _)) =>
+        status = GameService.submitMove(id, from, to, Player(0, 0))
+      case _ =>
+    }
 
     // send result back
     out ! Json.obj("status" -> (if (status) "ok" else "failed"))
@@ -87,18 +104,17 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
     logger.info("getAvailableMovesAction")
     // do stuff
     val data = (request \ "data").get
-    val from = (data \ "from").get.as[Array[Int]]
+    val from = Json.fromJson[Point3D]((data \ "from").get)
 
     val playerResult = Json.fromJson[Player]((data \ "player").get)
 
-    playerResult match {
-      case JsSuccess(player, _) =>
-
-        val pos = Point3D.arrayToPoint3D(from)
+    (playerResult, from) match {
+      case (JsSuccess(player, _), JsSuccess(pos, _)) =>
         val result = GameService.getAvailableMoves(id, pos, player)
 
         out ! Json.obj(
           "status" -> "ok",
+          "command" -> "availableMoves",
           "data" -> result.map(point => Array(point.x, point.y, point.z))
         )
 
@@ -117,6 +133,7 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
 
         out ! Json.obj(
           "status" -> "ok",
+          "command" -> "gameStatus",
           "data" -> Json.obj(
             "nrPlanes" -> GameService.getNrPlanes(id).get, // has some value because Some(pieces)
             "boardSize" -> GameService.getBoardSize(id).get, // has some value because Some(pieces)
