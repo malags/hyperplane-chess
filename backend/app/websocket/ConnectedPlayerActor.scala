@@ -56,7 +56,7 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
    * @return
    */
   override def receive: Receive = {
-    case Moved(move, id) => out ! move
+    case Moved(move, id) => gameStatusAction()
 
     // initial case
     case value: JsValue =>
@@ -115,7 +115,7 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
         out ! Json.obj(
           "status" -> "ok",
           "command" -> "availableMoves",
-          "data" -> result.map(point => Array(point.x, point.y, point.z))
+          "data" -> result
         )
 
       case _ => failed()

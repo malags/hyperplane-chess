@@ -13,9 +13,12 @@
  * Connection to the server with websocket
  */
 class Connection {
-    constructor(socket_url) {
+    constructor(socket_url, game) {
         this.socket = new WebSocket(socket_url)
-        this.socket.onopen = () => console.log("connected")
+        this.socket.onopen = () => {
+            console.log("connected")
+            this.sendGetGameStatus()
+        }
         this.socket.onerror = () => console.log("websocket error")
         this.socket.onclose = (message) => {
             console.log(message.reason)
@@ -30,6 +33,7 @@ class Connection {
             }
         }.bind(this), 50000);
 
+        this.game = game
     }
 
 
@@ -43,10 +47,10 @@ class Connection {
                     console.log(json) //TODO actual action
                     break
                 case "availableMoves":  // requested moves for some position
-                    console.log(json)
+                    this.game.updateAvailable(json)
                     break
                 case "gameStatus":
-                    console.log(json)
+                    this.game.updateGame(json)
                     break
                 default:
                     console.log(json)
