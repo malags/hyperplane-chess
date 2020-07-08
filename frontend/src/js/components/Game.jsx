@@ -13,6 +13,8 @@ import React, {Component} from "react";
 import ReactDOM from "react-dom";
 import Connection from "../classes/Connection"
 import * as PIXI from 'pixi.js'
+import Row from "react-bootstrap/Row";
+import Container from "react-bootstrap/Container";
 
 class Game extends Component {
     constructor(props) {
@@ -40,11 +42,9 @@ class Game extends Component {
 
 
         let pixi = new PIXI.Application({
-            width: 900,
-            height: 900,
+            resizeTo: window,
             backgroundColor: 0x666666
         })
-
 
         //background empty image to handle clicks outside board
         let container = new PIXI.Container();
@@ -54,7 +54,10 @@ class Game extends Component {
         bkg.width = pixi.screen.width;
         bkg.height = pixi.screen.height;
         bkg.interactive = true
-        bkg.on("mousedown", () => this.setState({selectedPos: null}))
+        bkg.on("mousedown", () => {
+            this.setState({selectedPos: null})
+            this.updateAvailable()
+        })
 
         container.addChild(bkg)
 
@@ -76,14 +79,14 @@ class Game extends Component {
         let n = this.state.nrBoards
         let boardSize = this.state.boardSize
         let tile_size = this.state.tile_size
-        let center = this.state.pixi.screen.width / 2
+        let center = Math.min(this.state.pixi.screen.width, this.state.pixi.screen.height) / 2
         let radius = 1.3 * center / 2 // TODO: needs tweaking boards may overlap, consider list of values for size/n
         let dir = [0, -radius]
 
         for (let part = 0; part < n; ++part) {
             let v = this._rotateVector(dir, part * 360 / n)
-            let pos_x = center + v[0] - tile_size * boardSize / 2
-            let pos_y = center + v[1] - tile_size * boardSize / 2
+            let pos_x = (this.state.pixi.screen.width / 2) + v[0] - tile_size * boardSize / 2
+            let pos_y = (this.state.pixi.screen.height / 2) + v[1] - tile_size * boardSize / 2
             this._drawBoard(pos_x, pos_y, part)
         }
     }
@@ -161,14 +164,14 @@ class Game extends Component {
         let nrBoards = this.state.nrBoards
         let boardSize = this.state.boardSize
         let tile_size = this.state.tile_size
-        let center = this.state.pixi.screen.width / 2
+        let center = Math.min(this.state.pixi.screen.width, this.state.pixi.screen.height) / 2
         let radius = 1.3 * center / 2
 
         let dir = [0, -radius]
         let v = this._rotateVector(dir, point.z * 360 / nrBoards)
 
-        let pos_x = center + v[0] - tile_size * boardSize / 2
-        let pos_y = center + v[1] - tile_size * boardSize / 2
+        let pos_x = (this.state.pixi.screen.width / 2) + v[0] - tile_size * boardSize / 2
+        let pos_y = (this.state.pixi.screen.height / 2) + v[1] - tile_size * boardSize / 2
 
         let x = pos_x + tile_size * point.x
         let y = pos_y + tile_size * point.y
@@ -260,12 +263,12 @@ class Game extends Component {
 
     render() {
         return (
-            <div className="Game">
-                <p>Game</p>
-                <div ref={(el) => {
+            <Container className="Game" fluid>
+                <Row>Game</Row>
+                <Row ref={(el) => {
                     this.GView = el
                 }}/>
-            </div>
+            </Container>
         );
     }
 }

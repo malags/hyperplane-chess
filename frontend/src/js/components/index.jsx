@@ -13,6 +13,9 @@ import React, {Component} from "react";
 import ReactDOM from "react-dom";
 
 import Game from "./Game.jsx";
+import NewGameForm from "./NewGameForm.jsx";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
 
 class App extends Component {
     constructor(props) {
@@ -26,9 +29,19 @@ class App extends Component {
     render() {
         return (
             <div className="app-content">
-                <h1>Hello World!</h1>
-                <button onClick={this.newGame.bind(this)}>new Game</button>
-                <Game socket_url={window.location.href.replace("http", "ws") + "socket?id=" + 0}/> //TODO: change to dynamic
+                <Container>
+                    <h1>Hello World!</h1>
+                    <Button onClick={this.newGame.bind(this)}>new Game</Button>
+                </Container>
+                <Game socket_url={window.location.href.replace("http", "ws") + "socket?id=" + 0}/>
+                {/*TODO: change to dynamic*/}
+                <NewGameForm/>
+                <link
+                    rel="stylesheet"
+                    href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+                    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+                    crossOrigin="anonymous"
+                />
             </div>
         )
     }
