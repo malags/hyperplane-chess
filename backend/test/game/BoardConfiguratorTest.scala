@@ -66,7 +66,7 @@ class BoardConfiguratorTest extends PlaySpec {
       val players = Array(Player(0, 0), Player(1, 1))
       val movementManager: MovementManager = MovementManager(nrPlanes = 2, boardSize = 6, jsonString)
       val boards: Boards = Boards(movementManager)
-      val piecesPosition: String = """NA,NA,TEST_PIECE,TEST_PIECE,NA,NA,NA,TEST_PIECE,TEST_PIECE,NA,NA,NA"""
+      val piecesPosition: String = """NA,NA,TEST_PIECE,TEST_PIECE,NA,NA,NA,TEST_PIECE,TEST_PIECE,NA,NA,NA,NA,NA,NA,NA,NA,NA"""
       val boardConfigurator: BoardConfigurator = BoardConfigurator(piecesPosition = piecesPosition)
       boardConfigurator.initBoards(boards, players)
       /*

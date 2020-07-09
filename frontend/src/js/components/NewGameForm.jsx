@@ -14,30 +14,109 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import _ from 'lodash';
 import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 class NewGameForm extends Component {
+    state = {
+        nrBoards: 1,
+        boardSize: 5,
+        nrPlayers: 2,
+        nrGroups: 2,
+        movementFile: "",
+        piecesPosition: new Array(10).fill("NA")
+    }
+
+    onChangeInt = (e) => {
+        this.setState({
+            [e.target.id]: parseInt(e.target.value)
+        })
+
+        // re-initialize piecesPosition
+        if (e.target.id.valueOf() === "boardSize") {
+            this.setState({
+                piecesPosition: new Array(e.target.value * Math.floor(e.target.value / 2)).fill("NA")
+            })
+        }
+    };
+
+    onChangeString = (e) => {
+        this.setState({
+            [e.target.id]: e.target.value
+        })
+    };
+
+    onChangePosition = (e) => {
+        let tempPos = this.state.piecesPosition
+        let idx = e.target.getAttribute("idx")
+        tempPos[idx] = e.target.value === "" ? "NA" : e.target.value
+        this.setState({piecesPosition: tempPos})
+    };
+
+    onSubmit = (e) => {
+        e.preventDefault()
+        console.log(e)
+        console.log(this.state)
+    }
 
     render() {
         return (
-            <Container className="NewGameForm" fluid>
-                <Form>
-                    <Form.Group controlId="newGameFrom.nrBoards">
+            <Container className="NewGameForm" id="NewGameForm" fluid>
+                <Form onSubmit={this.onSubmit}>
+                    <Form.Group controlId="nrBoards">
                         <Form.Label>Number of Boards</Form.Label>
-                        <Form.Control as="select">
+                        <Form.Control as="select" onChange={this.onChangeInt}>
                             {_.range(1, 8 + 1).map(value => <option key={value} value={value}>{value}</option>)}
                         </Form.Control>
                         <Form.Text className="text-muted">
-                            It's possible to play with up to 8 boards
+                            It's possible to play with up to 8 boards.
                         </Form.Text>
                     </Form.Group>
-                    <Form.Group controlId="newGameFrom.nrPlayers">
-                        <Form.Label>Number of Players</Form.Label>
-                        <Form.Control as="select">
-                            {_.range(2, 16 + 1).map(value => <option key={value} value={value}>{value}</option>)}
+                    <Form.Group controlId="boardSize">
+                        <Form.Label>Size of each Board</Form.Label>
+                        <Form.Control as="select" onChange={this.onChangeInt}>
+                            {_.range(5, 12 + 1).map(value => <option key={value} value={value}>{value}</option>)}
                         </Form.Control>
                         <Form.Text className="text-muted">
-                            It's possible to play with up to 16 players
+                            The Size of each Board in the Game
                         </Form.Text>
+                    </Form.Group>
+                    <Form.Group controlId="nrPlayers">
+                        <Form.Label>Number of Players</Form.Label>
+                        <Form.Control as="select" onChange={this.onChangeInt}>
+                            {_.range(2, 2 * this.state.nrBoards + 1).map(value => <option key={value}
+                                                                                          value={value}>{value}</option>)}
+                        </Form.Control>
+                        <Form.Text className="text-muted">
+                            It's possible to play with up to 16 Players.
+                        </Form.Text>
+                    </Form.Group>
+
+                    <Form.Group controlId="nrGroups">
+                        <Form.Label>Number of Groups</Form.Label>
+                        <Form.Control as="select" onChange={this.onChangeInt}>
+                            {_.range(2, this.state.nrPlayers + 1).map(value => <option key={value}
+                                                                                       value={value}>{value}</option>)}
+                        </Form.Control>
+                        <Form.Text className="text-muted">
+                            Players with Different Groups are considered Enemies.
+                        </Form.Text>
+                    </Form.Group>
+
+                    <Form.Group controlId="movementFile">
+                        <Form.Label>Pieces Definition</Form.Label>
+                        <Form.Control as="textarea" onChange={this.onChangeString} rows={5}/>
+                        <Form.Text className="text-muted">
+                            Definition of the Pieces as specified on the <a
+                            href={"https://github.com/malags/hyperplane-chess"} target={"_blank"}>GitHub page</a>.
+                        </Form.Text>
+                    </Form.Group>
+
+                    <Form.Group controlId={"piecesPosition"}>
+                        <Form.Label>Position of the Pieces</Form.Label>
+                        <Container>
+                            {this.boardConfig()}
+                        </Container>
                     </Form.Group>
 
                     <Button variant="primary" type="submit">
@@ -48,6 +127,31 @@ class NewGameForm extends Component {
         );
     }
 
+    boardConfig = () => {
+        return _.range(0, this.state.boardSize).map(row => {
+                return <Row key={row}>
+                    {_.range(0, this.state.boardSize).map(column => {
+                        return <Col key={column}>
+                            {this.boardTile(row, column)}
+                        </Col>
+                    })
+                    }
+                </Row>
+            }
+        )
+    }
+
+    boardTile = (row, column) => {
+        if (row < this.state.boardSize / 2)
+            return <Form.Control as="textarea"
+                                 onChange={this.onChangePosition}
+                                 disabled/>
+        else
+            return <Form.Control as="textarea"
+                                 onChange={this.onChangePosition}
+                                 idx={(this.state.boardSize - row - 1) * this.state.boardSize +
+                                 this.state.boardSize - column - 1}/>
+    }
 }
 
 export default NewGameForm;
