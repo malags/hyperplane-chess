@@ -24,7 +24,7 @@ class NewGameForm extends Component {
         nrPlayers: 2,
         nrGroups: 2,
         movementFile: "",
-        piecesPosition: new Array(10).fill("NA")
+        piecesPosition: new Array(10).fill("")
     }
 
     onChangeInt = (e) => {
@@ -35,7 +35,7 @@ class NewGameForm extends Component {
         // re-initialize piecesPosition
         if (e.target.id.valueOf() === "boardSize") {
             this.setState({
-                piecesPosition: new Array(e.target.value * Math.floor(e.target.value / 2)).fill("NA")
+                piecesPosition: new Array(e.target.value * Math.floor(e.target.value / 2)).fill("")
             })
         }
     };
@@ -129,14 +129,14 @@ class NewGameForm extends Component {
 
     boardConfig = () => {
         return _.range(0, this.state.boardSize).map(row => {
-                return <Row key={row}>
-                    {_.range(0, this.state.boardSize).map(column => {
-                        return <Col key={column}>
-                            {this.boardTile(row, column)}
-                        </Col>
-                    })
-                    }
-                </Row>
+            return <Row key={"row_" + row}>
+                {_.range(0, this.state.boardSize).map(column => {
+                    return <Col key={"col_" + column}>
+                        {this.boardTile(row, column)}
+                    </Col>
+                })
+                }
+            </Row>
             }
         )
     }
@@ -144,13 +144,17 @@ class NewGameForm extends Component {
     boardTile = (row, column) => {
         if (row < this.state.boardSize / 2)
             return <Form.Control as="textarea"
-                                 onChange={this.onChangePosition}
-                                 disabled/>
+                                 key={"key_" + column + "," + row}
+                                 disabled
+                                 value={""}/>
         else
             return <Form.Control as="textarea"
                                  onChange={this.onChangePosition}
+                                 key={"key_" + column + "," + row}
                                  idx={(this.state.boardSize - row - 1) * this.state.boardSize +
-                                 this.state.boardSize - column - 1}/>
+                                 this.state.boardSize - column - 1}
+                                 value={this.state.piecesPosition[(this.state.boardSize - row - 1) * this.state.boardSize +
+                                 this.state.boardSize - column - 1]}/>
     }
 }
 
