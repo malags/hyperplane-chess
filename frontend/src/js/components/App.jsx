@@ -16,33 +16,33 @@ import Game from "./Game.jsx";
 import NewGameForm from "./NewGameForm.jsx";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
+import {BrowserRouter, Route} from "react-router-dom";
+import NavBar from "./NavBar.jsx";
+import Home from "./Home.jsx";
 
 class App extends Component {
     constructor(props) {
         super(props);
     }
 
-    newGame(e) {
-        console.log(e.target)
-    }
-
     render() {
         return (
-            <div className="app-content">
-                <Container>
-                    <h1>Hello World!</h1>
-                    <Button onClick={this.newGame.bind(this)}>new Game</Button>
-                </Container>
-                <Game socket_url={window.location.href.replace("http", "ws") + "socket?id=" + 0}/>
-                {/*TODO: change to dynamic*/}
-                <NewGameForm/>
-                <link
-                    rel="stylesheet"
-                    href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-                    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
-                    crossOrigin="anonymous"
-                />
-            </div>
+            <BrowserRouter>
+                <div className="App">
+                    <NavBar/>
+                    <Route exact path="/" component={Home}/>
+                    <Route path={"/game"} render={(props) => (<Game {...props}
+                                                                    socket_url={window.location.href.replace("http", "ws") + "socket?id=" + 0}/>)}/>
+                    <Route path={"/new-game"} component={NewGameForm}/>
+                    {/*TODO: change to dynamic*/}
+                    <link
+                        rel="stylesheet"
+                        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+                        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+                        crossOrigin="anonymous"
+                    />
+                </div>
+            </BrowserRouter>
         )
     }
 }

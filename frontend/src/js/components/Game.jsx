@@ -264,7 +264,6 @@ class Game extends Component {
     render() {
         return (
             <Container className="Game" fluid>
-                <Row>Game</Row>
                 <Row ref={(el) => {
                     this.GView = el
                 }}/>

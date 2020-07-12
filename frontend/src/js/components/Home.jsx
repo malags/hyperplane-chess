@@ -9,41 +9,14 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const path = require('path');
-const HtmlWebPackPlugin = require("html-webpack-plugin");
+import React from "react";
+import Container from "react-bootstrap/Container";
 
-module.exports = {
-    output: {
-        path: path.resolve(__dirname, '../backend/public'),
-        filename: 'bundle.js',
-        publicPath: '/'
-    },
-    module: {
-        rules: [
-            {
-                test: /\.(js|jsx)$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: "babel-loader"
-                }
-            },
-            {
-                test: /\.html$/,
-                use: [
-                    {
-                        loader: "html-loader"
-                    }
-                ]
-            }
-        ]
-    },
-    devServer: {
-        historyApiFallback: true,
-    },
-    plugins: [
-        new HtmlWebPackPlugin({
-            template: "./src/index.html",
-            filename: "./index.html"
-        })
-    ]
-};
+const Home = () => {
+    return (
+        <Container className={"Home"}>
+            <h1>Home</h1>
+        </Container>
+    )
+}
+export default Home
