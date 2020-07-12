@@ -11,17 +11,18 @@
 import React from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
+import {Link, NavLink} from "react-router-dom";
 
 const NavBar = () => {
     return (
         <Navbar bg="dark" variant="dark" expand="lg">
-            <Navbar.Brand href="/">React-Bootstrap</Navbar.Brand>
+            <Navbar.Brand to="/" as={Link}>React-Bootstrap</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav"/>
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
-                    <Nav.Link href="/new-game">New Game</Nav.Link>
-                    <Nav.Link href="/game">Game Test</Nav.Link>
-                    <Nav.Link href="/connect">Connect</Nav.Link>
+                    <Nav.Link to="/new-game" as={NavLink}>New Game</Nav.Link>
+                    <Nav.Link to="/game" as={NavLink}>Game Test</Nav.Link>
+                    <Nav.Link to="/connect" as={NavLink}>Connect</Nav.Link>
                 </Nav>
             </Navbar.Collapse>
         </Navbar>
