@@ -36,6 +36,7 @@ class MatchManager extends Actor {
     case Remove(id: Long, client: ActorRef) => {
       val clients = participants.apply(id).filter(_ != client)
       participants = participants + (id -> clients)
+      logger.info("One player disconnected")
       if (clients.isEmpty) {
         GameService.remove(id)
         logger.info(s"deleted game $id")

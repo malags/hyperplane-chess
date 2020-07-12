@@ -75,6 +75,10 @@ class Game extends Component {
         })
     }
 
+    componentWillUnmount() {
+        this.state.connection.close()
+    }
+
     drawNBoards() {
         let n = this.state.nrBoards
         let boardSize = this.state.boardSize
