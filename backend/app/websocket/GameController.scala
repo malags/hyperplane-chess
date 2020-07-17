@@ -24,6 +24,7 @@ import websocket.MatchManager.{Moved, NewClient, Remove}
 
 class GameController @Inject()(cc: ControllerComponents)(implicit system: ActorSystem, mat: Materializer)
   extends AbstractController(cc) {
+  val logger = Logger(this.getClass)
 
   /**
    * MatchManager: it manages all matches, a Match is a Game with ConnectedPlayerActors
@@ -53,6 +54,20 @@ class GameController @Inject()(cc: ControllerComponents)(implicit system: ActorS
       ConnectedPlayerActor.props(out, manager, id)
     }
   }
+
+  def postNewGame() = Action { request =>
+    val body: Option[String] = request.body.asText
+    body match {
+      case Some(txt) => {
+        val jsonBody: JsValue = Json.parse(txt)
+        //GameService.newGame(players,nrPlanes,boardSize,movementFile,piecesPositions)
+        Ok("nice" + jsonBody.toString())
+      }
+      case None => BadRequest("no body")
+    }
+
+  }
+
 }
 
 

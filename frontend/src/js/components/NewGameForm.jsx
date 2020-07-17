@@ -53,19 +53,37 @@ class NewGameForm extends Component {
         this.setState({piecesPosition: tempPos})
     };
 
-    onSubmit = (e) => {
-        e.preventDefault()
-        console.log(e)
-        console.log(this.state)
+    mySubmitHandler = (event) => {
+        event.preventDefault();
+        const data = new FormData(event.target);
+
+        let requestOptions = {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json'
+            },
+
+            body: JSON.stringify(this.state)
+        };
+        fetch('http://localhost:9000/newGame', requestOptions)
+            .then(response => {
+                if (response.status >= 200 && response.status < 300) {
+                    return response;
+                    window.location.reload();
+                } else {
+                    console.log(response);
+                }
+            }).catch(err => console.log(err));
     }
 
     render() {
         return (
-            <Container className="NewGameForm" id="NewGameForm" fluid>
-                <Form onSubmit={this.onSubmit}>
+            <Container className="NewGameForm" fluid>
+                <Form id={"formNewGame"} action={window.location.origin + "/newGame"} method={"POST"}
+                      onSubmit={this.mySubmitHandler}>
                     <Form.Group controlId="nrBoards">
                         <Form.Label>Number of Boards</Form.Label>
-                        <Form.Control as="select" onChange={this.onChangeInt}>
+                        <Form.Control as="select" value={this.state.nrBoards} onChange={this.onChangeInt}>
                             {_.range(1, 8 + 1).map(value => <option key={value} value={value}>{value}</option>)}
                         </Form.Control>
                         <Form.Text className="text-muted">
@@ -74,7 +92,7 @@ class NewGameForm extends Component {
                     </Form.Group>
                     <Form.Group controlId="boardSize">
                         <Form.Label>Size of each Board</Form.Label>
-                        <Form.Control as="select" onChange={this.onChangeInt}>
+                        <Form.Control as="select" value={this.state.boardSize} onChange={this.onChangeInt}>
                             {_.range(5, 12 + 1).map(value => <option key={value} value={value}>{value}</option>)}
                         </Form.Control>
                         <Form.Text className="text-muted">
@@ -83,7 +101,7 @@ class NewGameForm extends Component {
                     </Form.Group>
                     <Form.Group controlId="nrPlayers">
                         <Form.Label>Number of Players</Form.Label>
-                        <Form.Control as="select" onChange={this.onChangeInt}>
+                        <Form.Control as="select" value={this.state.nrPlayers} onChange={this.onChangeInt}>
                             {_.range(2, 2 * this.state.nrBoards + 1).map(value => <option key={value}
                                                                                           value={value}>{value}</option>)}
                         </Form.Control>
@@ -94,7 +112,7 @@ class NewGameForm extends Component {
 
                     <Form.Group controlId="nrGroups">
                         <Form.Label>Number of Groups</Form.Label>
-                        <Form.Control as="select" onChange={this.onChangeInt}>
+                        <Form.Control as="select" value={this.state.nrGroups} onChange={this.onChangeInt}>
                             {_.range(2, this.state.nrPlayers + 1).map(value => <option key={value}
                                                                                        value={value}>{value}</option>)}
                         </Form.Control>
@@ -105,7 +123,8 @@ class NewGameForm extends Component {
 
                     <Form.Group controlId="movementFile">
                         <Form.Label>Pieces Definition</Form.Label>
-                        <Form.Control as="textarea" onChange={this.onChangeString} rows={5}/>
+                        <Form.Control required as="textarea" value={this.state.movementFile}
+                                      onChange={this.onChangeString} rows={5}/>
                         <Form.Text className="text-muted">
                             Definition of the Pieces as specified on the <a
                             href={"https://github.com/malags/hyperplane-chess"} target={"_blank"}>GitHub page</a>.
@@ -142,6 +161,7 @@ class NewGameForm extends Component {
     }
 
     boardTile = (row, column) => {
+        let idx = (this.state.boardSize - row - 1) * this.state.boardSize + this.state.boardSize - column - 1
         if (row < this.state.boardSize / 2)
             return <Form.Control as="textarea"
                                  key={"key_" + column + "," + row}
@@ -151,10 +171,8 @@ class NewGameForm extends Component {
             return <Form.Control as="textarea"
                                  onChange={this.onChangePosition}
                                  key={"key_" + column + "," + row}
-                                 idx={(this.state.boardSize - row - 1) * this.state.boardSize +
-                                 this.state.boardSize - column - 1}
-                                 value={this.state.piecesPosition[(this.state.boardSize - row - 1) * this.state.boardSize +
-                                 this.state.boardSize - column - 1]}/>
+                                 idx={idx}
+                                 value={this.state.piecesPosition[idx]}/>
     }
 }
 
