@@ -33,7 +33,7 @@ class GameServiceTest extends PlaySpec {
           ]
          }"""
   )
-  val piecesPosition: String = """NA,NA,TEST_PIECE,TEST_PIECE,NA,NA,NA,TEST_PIECE,TEST_PIECE,NA,NA,NA,NA,NA,NA,NA,NA,NA"""
+  val piecesPosition: List[String] = List("", "", "TEST_PIECE", "TEST_PIECE", "", "", "", "TEST_PIECE", "TEST_PIECE", "", "", "", "", "", "", "", "", "")
 
   "GameService newGame" should {
     "create a new game and return associated ID" in {
@@ -45,7 +45,7 @@ class GameServiceTest extends PlaySpec {
     }
 
     "reject wrong piecesPosition" in {
-      val piecesPosition: String = """NA"""
+      val piecesPosition: List[String] = List("")
       try {
         GameService.newGame(players, nrPlanes = 2, boardSize = 6, movementFile, piecesPosition)
         fail()

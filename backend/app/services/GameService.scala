@@ -37,7 +37,7 @@ object GameService {
    * @param piecesPosition CSV (no header) representing the starting position of the boards
    * @return ID of the Game
    */
-  def newGame(players: Array[Player], nrPlanes: Int, boardSize: Int, movementFile: JsValue, piecesPosition: String): Long = {
+  def newGame(players: Array[Player], nrPlanes: Int, boardSize: Int, movementFile: JsValue, piecesPosition: List[String]): Long = {
 
     val game: Game = new Game(players, nrPlanes, boardSize, movementFile)
     val boardConfigurator: BoardConfigurator = BoardConfigurator(piecesPosition)

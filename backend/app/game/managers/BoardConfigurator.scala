@@ -15,7 +15,7 @@ import game.components.{Boards, Facing, Piece, Player, Point3D, Type}
 
 import scala.util.Random
 
-case class BoardConfigurator(piecesPosition: String) {
+case class BoardConfigurator(piecesPosition: List[String]) {
 
   /**
    * Verify that the piecesPosition String has valid format and content
@@ -26,16 +26,15 @@ case class BoardConfigurator(piecesPosition: String) {
   def verify(boards: Boards): Boolean = {
     // half board round down
     val nrSpots: Int = boards.movementManager.boardSize * (boards.movementManager.boardSize / 2)
-    val pieces: Array[String] = piecesPosition.split(",").map(_.trim)
 
     val validTypes = boards.movementManager.movementMap.keySet
     var typesFound = Set.empty[Type]
 
-    for (piece <- pieces)
-      if (piece != "NA")
+    for (piece <- piecesPosition)
+      if (piece != "")
         typesFound = typesFound + Type(piece)
 
-    pieces.length == nrSpots && validTypes.equals(typesFound)
+    piecesPosition.length == nrSpots && validTypes.equals(typesFound)
   }
 
   def initBoards(boards: Boards, players: Array[Player]): Boolean = {
@@ -85,12 +84,11 @@ case class BoardConfigurator(piecesPosition: String) {
    * @param facing  the direction the player is facing
    */
   private def setPlayer(boards: Boards, boardId: Int, player: Player, facing: Facing.Value): Unit = {
-    val pieces: Array[String] = piecesPosition.split(",").map(_.trim)
     val boardSize: Int = boards.movementManager.boardSize
 
-    for (index <- pieces.indices) {
-      if (pieces(index) != "NA") {
-        val pieceType: Type = Type(pieces(index))
+    for (index <- piecesPosition.indices) {
+      if (piecesPosition(index) != "") {
+        val pieceType: Type = Type(piecesPosition(index))
 
         // size = 8:   7 -> (7,0), 12 -> (4,1)
         val x: Int = index % boardSize

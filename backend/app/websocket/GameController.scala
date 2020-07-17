@@ -16,7 +16,7 @@ import akka.stream.Materializer
 import game.components.{Player, Point3D}
 import javax.inject.Inject
 import play.api.Logger
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsLookupResult, JsValue, Json, Reads}
 import play.api.libs.streams.ActorFlow
 import play.api.mvc._
 import services.GameService
@@ -44,7 +44,7 @@ class GameController @Inject()(cc: ControllerComponents)(implicit system: ActorS
           ]
          }"""
     )
-    val piecesPosition: String = """NA,NA,TEST_PIECE,TEST_PIECE,NA,NA,NA,TEST_PIECE,TEST_PIECE,NA,NA,NA,NA,NA,NA,NA,NA,NA"""
+    val piecesPosition: List[String] = List("", "", "TEST_PIECE", "TEST_PIECE", "", "", "", "TEST_PIECE", "TEST_PIECE", "", "", "", "", "", "", "", "", "")
     val id = GameService.newGame(players, nrPlanes = 2, boardSize = 6, movementFile, piecesPosition)
     Ok(Json.obj("id" -> id))
   }
@@ -60,8 +60,25 @@ class GameController @Inject()(cc: ControllerComponents)(implicit system: ActorS
     body match {
       case Some(txt) => {
         val jsonBody: JsValue = Json.parse(txt)
-        //GameService.newGame(players,nrPlanes,boardSize,movementFile,piecesPositions)
-        Ok("nice" + jsonBody.toString())
+
+        val jsNrPlanes: JsLookupResult = (jsonBody \ "nrBoards")
+        val jsBoardsSize: JsLookupResult = (jsonBody \ "boardSize")
+        val jsMovementFile: JsLookupResult = (jsonBody \ "movementFile")
+        val jsPiecesPositions: JsLookupResult = (jsonBody \ "piecesPosition")
+        if (jsNrPlanes.isDefined && jsBoardsSize.isDefined && jsMovementFile.isDefined && jsPiecesPositions.isDefined) {
+
+          try {
+            val mov = jsMovementFile.get
+            //TODO: remove hardcoding of player
+            val id: Long = GameService.newGame(players = Array(Player(0, 0), Player(1, 1)), jsNrPlanes.as[Int], jsBoardsSize.as[Int], mov, jsPiecesPositions.as[List[String]])
+
+            Ok(s"nice $id")
+          }
+          catch {
+            case e: Throwable => BadRequest(e.getMessage)
+          }
+        }
+        else BadRequest("invalid JSON at postNewGame")
       }
       case None => BadRequest("no body")
     }

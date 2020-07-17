@@ -18,6 +18,8 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
 class NewGameForm extends Component {
+    url = 'http://localhost:9000/newGame' //window.location.origin + "/newGame"
+
     state = {
         nrBoards: 1,
         boardSize: 5,
@@ -49,29 +51,37 @@ class NewGameForm extends Component {
     onChangePosition = (e) => {
         let tempPos = this.state.piecesPosition
         let idx = e.target.getAttribute("idx")
-        tempPos[idx] = e.target.value === "" ? "NA" : e.target.value
+        tempPos[idx] = e.target.value
         this.setState({piecesPosition: tempPos})
     };
 
     mySubmitHandler = (event) => {
         event.preventDefault();
-        const data = new FormData(event.target);
 
-        let requestOptions = {
+        let request = {
             method: 'POST',
             headers: {
                 'Accept': 'application/json'
             },
 
-            body: JSON.stringify(this.state)
+            body: JSON.stringify({
+                "nrBoards": this.state.nrBoards,
+                "boardSize": this.state.boardSize,
+                "nrPlayers": this.state.nrPlayers,
+                "nrGroups": this.state.nrGroups,
+                "piecesPosition": this.state.piecesPosition,
+                "movementFile": JSON.parse(this.state.movementFile)
+            })
         };
-        fetch('http://localhost:9000/newGame', requestOptions)
+        fetch(this.url, request)
             .then(response => {
                 if (response.status >= 200 && response.status < 300) {
-                    return response;
+                    console.log(response)
                     window.location.reload();
                 } else {
-                    console.log(response);
+                    console.log(response)
+                    response.text().then(error => alert(error))
+
                 }
             }).catch(err => console.log(err));
     }
@@ -79,7 +89,7 @@ class NewGameForm extends Component {
     render() {
         return (
             <Container className="NewGameForm" fluid>
-                <Form id={"formNewGame"} action={window.location.origin + "/newGame"} method={"POST"}
+                <Form id={"formNewGame"} action={this.url} method={"POST"}
                       onSubmit={this.mySubmitHandler}>
                     <Form.Group controlId="nrBoards">
                         <Form.Label>Number of Boards</Form.Label>

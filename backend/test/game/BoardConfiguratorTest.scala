@@ -34,7 +34,7 @@ class BoardConfiguratorTest extends PlaySpec {
           ]
          }"""
   )
-  val piecesPosition: String = """NA,NA,NA,TEST_PIECE,TEST_PIECE,NA,NA,NA"""
+  val piecesPosition: List[String] = List("", "", "", "TEST_PIECE", "TEST_PIECE", "", "", "")
   val movementManager: MovementManager = MovementManager(nrPlanes = 2, boardSize = 4, jsonString)
   val boards: Boards = Boards(movementManager)
 
@@ -47,7 +47,7 @@ class BoardConfiguratorTest extends PlaySpec {
     "verify correct format odd" in {
       val movementManager: MovementManager = MovementManager(nrPlanes = 2, boardSize = 5, jsonString)
       val boards: Boards = Boards(movementManager)
-      val piecesPosition: String = """NA,NA,NA,NA,TEST_PIECE,TEST_PIECE,NA,NA,NA,NA"""
+      val piecesPosition: List[String] = List("", "", "", "", "TEST_PIECE", "TEST_PIECE", "", "", "", "")
       val boardConfigurator: BoardConfigurator = BoardConfigurator(piecesPosition = piecesPosition)
 
       boardConfigurator.verify(boards = boards) mustBe true
@@ -66,7 +66,8 @@ class BoardConfiguratorTest extends PlaySpec {
       val players = Array(Player(0, 0), Player(1, 1))
       val movementManager: MovementManager = MovementManager(nrPlanes = 2, boardSize = 6, jsonString)
       val boards: Boards = Boards(movementManager)
-      val piecesPosition: String = """NA,NA,TEST_PIECE,TEST_PIECE,NA,NA,NA,TEST_PIECE,TEST_PIECE,NA,NA,NA,NA,NA,NA,NA,NA,NA"""
+
+      val piecesPosition: List[String] = List("", "", "TEST_PIECE", "TEST_PIECE", "", "", "", "TEST_PIECE", "TEST_PIECE", "", "", "", "", "", "", "", "", "")
       val boardConfigurator: BoardConfigurator = BoardConfigurator(piecesPosition = piecesPosition)
       boardConfigurator.initBoards(boards, players)
       /*
