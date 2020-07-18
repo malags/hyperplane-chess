@@ -8,30 +8,42 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import React from "react";
-import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
-import {Link, NavLink} from "react-router-dom";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
 
-const NavBar = () => {
-    return (
-        <Navbar bg="dark" variant="dark" expand="lg">
-            <Navbar.Brand to="/" as={Link}>Hyperplane Chess</Navbar.Brand>
-            <Navbar.Toggle aria-controls="basic-navbar-nav"/>
-            <Navbar.Collapse id="basic-navbar-nav">
-                <Nav className="mr-auto">
-                    <Nav.Link to="/new-game" as={NavLink}>New Game</Nav.Link>
-                    <Nav.Link to="/game" as={NavLink}>Game Test</Nav.Link>
-                </Nav>
-                <Form inline>
-                    <Form.Control type="number" placeholder="Game ID" className="mr-sm-2"/>
-                    <Button variant="outline-success" to="/connect" as={Link}>Connect</Button>
-                </Form>
-            </Navbar.Collapse>
-        </Navbar>
-    )
+import React, {Component} from "react";
+import Container from "react-bootstrap/Container";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
+import GroupSelector from "./GroupSelector.jsx";
+import Chat from "../Chat.jsx"
+
+class GameConfiguration extends Component {
+    state = {
+        name: "",
+        groupId: -1,
+        gameId: -1
+    }
+
+    componentDidMount() {
+        this.setState({
+            gameId: this.props.gameId
+        })
+    }
+
+    render() {
+        return (
+            <Container className={"GameConfiguration"}>
+                <Row>
+                    <Col>
+                        <GroupSelector nrGroups={2} configConnection={new Object()}/>
+                    </Col>
+                    <Col>
+                        <Chat/>
+                    </Col>
+                </Row>
+            </Container>
+        );
+    }
+
 }
 
-export default NavBar
+export default GameConfiguration

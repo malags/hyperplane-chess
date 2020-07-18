@@ -19,6 +19,7 @@ import Container from "react-bootstrap/Container";
 import {BrowserRouter, Route} from "react-router-dom";
 import NavBar from "./NavBar.jsx";
 import Home from "./Home.jsx";
+import GameConfiguration from "./game-configuration/GameConfiguration.jsx";
 
 class App extends Component {
     constructor(props) {
@@ -34,6 +35,7 @@ class App extends Component {
                     <Route path={"/game"} render={(props) => (<Game {...props}
                                                                     socket_url={window.location.href.replace("http", "ws") + "socket?id=" + 0}/>)}/>
                     <Route path={"/new-game"} component={NewGameForm}/>
+                    <Route path={"/connect"} component={GameConfiguration}/>
                     {/*TODO: change to dynamic*/}
                     <link
                         rel="stylesheet"

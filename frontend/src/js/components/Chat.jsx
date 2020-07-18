@@ -8,30 +8,25 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import React from "react";
-import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
-import {Link, NavLink} from "react-router-dom";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
 
-const NavBar = () => {
-    return (
-        <Navbar bg="dark" variant="dark" expand="lg">
-            <Navbar.Brand to="/" as={Link}>Hyperplane Chess</Navbar.Brand>
-            <Navbar.Toggle aria-controls="basic-navbar-nav"/>
-            <Navbar.Collapse id="basic-navbar-nav">
-                <Nav className="mr-auto">
-                    <Nav.Link to="/new-game" as={NavLink}>New Game</Nav.Link>
-                    <Nav.Link to="/game" as={NavLink}>Game Test</Nav.Link>
-                </Nav>
-                <Form inline>
-                    <Form.Control type="number" placeholder="Game ID" className="mr-sm-2"/>
-                    <Button variant="outline-success" to="/connect" as={Link}>Connect</Button>
-                </Form>
-            </Navbar.Collapse>
-        </Navbar>
-    )
+import React, {Component} from "react";
+import Container from "react-bootstrap/Container";
+import Messages from "../classes/Messages"
+
+//TODO
+class Chat extends Component {
+
+    state = {
+        messages: new Messages()
+    }
+
+    render() {
+        return (
+            <Container className={"Chat"}>
+                <h1>Chat</h1>
+            </Container>
+        );
+    }
 }
 
-export default NavBar
+export default Chat
