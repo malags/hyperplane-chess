@@ -11,22 +11,53 @@
 
 import React, {Component} from "react";
 import Container from "react-bootstrap/Container";
-import Messages from "../classes/Messages"
+import ChatMessages from "./ChatMessages.jsx"
+import Form from "react-bootstrap/Form";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
+import {connect} from 'react-redux'
+import {setNameAction} from "../redux/actions";
 
 //TODO
-class Chat extends Component {
 
-    state = {
-        messages: new Messages()
+const _setName = (dispatch, e) => {
+    let newName = e.target.value
+    if (newName.length < 15) dispatch(setNameAction(newName))
+}
+
+function mapStateToProps(state, ownProps) {
+    return {name: state.name}
+}
+
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        setName: (control) => _setName(dispatch, control)
     }
+}
+
+class Chat extends Component {
 
     render() {
         return (
             <Container className={"Chat"}>
-                <h1>Chat</h1>
+                <Col>
+                    <h1>Chat</h1>
+                    <Form inline>
+                        <Form.Group as={Row}>
+                            <Form.Label column>Chat Name</Form.Label>
+                            <Col xs="auto">
+                                <Form.Control type={"input"} placeholder={"chat name"} value={this.props.name}
+                                              onChange={this.props.setName}/>
+                            </Col>
+                        </Form.Group>
+                    </Form>
+
+                    <ChatMessages/>
+                </Col>
             </Container>
         );
     }
 }
 
-export default Chat
+export default connect(mapStateToProps, mapDispatchToProps)(Chat)

@@ -9,26 +9,27 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-class Messages {
-    constructor() {
-    }
 
-    messages = []
-    break_size = 256
+/*
+ * action types
+ */
+export const CHAT_SET_NAME = "CHAT_SET_NAME"
+export const CHAT_GOT = "CHAT_GOT"
+export const CHAT_SEND = "CHAT_SEND"
 
+/*
+ * action creators
+ */
 
-    add(message) {
-        this.messages.push(message)
-        if (this.messages.length >= this.break_size) {
-            let messagesSlice = this.messages.slice(this.break_size / 2)
-            this.messages = messagesSlice
-        }
-    }
-
-    get() {
-        return this.messages
-    }
+export function setNameAction(name) {
+    return {type: CHAT_SET_NAME, name}
 
 }
 
-export default Messages
+export function gotMessageAction(message) {
+    return {type: CHAT_GOT, message}
+}
+
+export function sendMessageAction(message) {
+    return {type: CHAT_SEND, message}
+}

@@ -120,8 +120,8 @@ class GroupSelector extends Component {
     render() {
         return (
             <Container className={"mx-auto"}>
-                <Row><h1>GroupSelector</h1></Row>
-                <Container>
+                <Row><h1>Group Selector</h1></Row>
+                <Col>
                     <Row>
                         {this._groups()}
                     </Row>
@@ -131,7 +131,7 @@ class GroupSelector extends Component {
                     <Row>
                         {this._buttons()}
                     </Row>
-                </Container>
+                </Col>
             </Container>
         );
     }

@@ -8,41 +8,12 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+import {createStore} from 'redux'
+import rootReducer from "./reducers";
 
-import React, {Component} from "react";
-import Container from "react-bootstrap/Container";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
-import GroupSelector from "./GroupSelector.jsx";
-import Chat from "../Chat.jsx"
+const initialState = require("./initialState.json")
 
-class GameConfiguration extends Component {
-    state = {
-        groupId: -1,
-        gameId: -1
-    }
+const store = createStore(rootReducer, initialState)
 
-    componentDidMount() {
-        this.setState({
-            gameId: this.props.gameId
-        })
-    }
 
-    render() {
-        return (
-            <Container className={"GameConfiguration"}>
-                <Row>
-                    <Col md="auto">
-                        <GroupSelector nrGroups={2} configConnection={new Object()}/>
-                    </Col>
-                    <Col>
-                        <Chat/>
-                    </Col>
-                </Row>
-            </Container>
-        );
-    }
-
-}
-
-export default GameConfiguration
+export default store

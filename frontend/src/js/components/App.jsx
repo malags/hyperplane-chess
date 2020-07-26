@@ -10,16 +10,19 @@
  */
 
 import React, {Component} from "react";
+import {Provider} from "react-redux"
 import ReactDOM from "react-dom";
 
 import Game from "./Game.jsx";
 import NewGameForm from "./NewGameForm.jsx";
-import Button from "react-bootstrap/Button";
-import Container from "react-bootstrap/Container";
 import {BrowserRouter, Route} from "react-router-dom";
 import NavBar from "./NavBar.jsx";
 import Home from "./Home.jsx";
 import GameConfiguration from "./game-configuration/GameConfiguration.jsx";
+
+
+import store from "../redux/Store";
+
 
 class App extends Component {
     constructor(props) {
@@ -28,23 +31,24 @@ class App extends Component {
 
     render() {
         return (
-            <BrowserRouter>
-                <div className="App">
-                    <NavBar/>
-                    <Route exact path="/" component={Home}/>
-                    <Route path={"/game"} render={(props) => (<Game {...props}
-                                                                    socket_url={window.location.href.replace("http", "ws") + "socket?id=" + 0}/>)}/>
-                    <Route path={"/new-game"} component={NewGameForm}/>
-                    <Route path={"/connect"} component={GameConfiguration}/>
-                    {/*TODO: change to dynamic*/}
-                    <link
-                        rel="stylesheet"
-                        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-                        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
-                        crossOrigin="anonymous"
-                    />
-                </div>
-            </BrowserRouter>
+            <Provider store={store}>
+                <BrowserRouter>
+                    <div className="App">
+                        <NavBar/>
+                        <Route exact path="/" component={Home}/>
+                        <Route path={"/game"} render={(props) => (<Game {...props}
+                                                                        socket_url={window.location.href.replace("http", "ws") + "socket?id=" + 0}/>)}/>
+                        <Route path={"/new-game"} component={NewGameForm}/>
+                        <Route path={"/connect"} component={GameConfiguration}/>
+                        <link
+                            rel="stylesheet"
+                            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+                            integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+                            crossOrigin="anonymous"
+                        />
+                    </div>
+                </BrowserRouter>
+            </Provider>
         )
     }
 }
