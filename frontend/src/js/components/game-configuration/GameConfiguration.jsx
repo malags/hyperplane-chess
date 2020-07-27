@@ -15,25 +15,37 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import GroupSelector from "./GroupSelector.jsx";
 import Chat from "../Chat.jsx"
+import Connection from "../../classes/Connection";
+import {setConnectionAction, setGameIdAction} from "../../redux/actions";
+import {connect} from 'react-redux'
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        storeSetConnection: (connection) => dispatch(setConnectionAction(connection)),
+        storeSetGameId: (gameId) => dispatch(setGameIdAction(gameId))
+    }
+}
 
 class GameConfiguration extends Component {
     state = {
-        groupId: -1,
-        gameId: -1
+        groupId: -1
     }
 
     componentDidMount() {
-        this.setState({
-            gameId: this.props.gameId
-        })
+        let gameId = this.props.match.params.gameId
+        this.socket_url = "ws://localhost:9000/socket?id=" + gameId
+        this.connection = new Connection(this.socket_url)
+        this.props.storeSetConnection(this.connection)
+        this.props.storeSetGameId(gameId)
     }
+
 
     render() {
         return (
             <Container className={"GameConfiguration"}>
                 <Row>
                     <Col md="auto">
-                        <GroupSelector nrGroups={2} configConnection={new Object()}/>
+                        <GroupSelector nrGroups={2}/>
                     </Col>
                     <Col>
                         <Chat/>
@@ -45,4 +57,4 @@ class GameConfiguration extends Component {
 
 }
 
-export default GameConfiguration
+export default connect(null, mapDispatchToProps)(GameConfiguration)

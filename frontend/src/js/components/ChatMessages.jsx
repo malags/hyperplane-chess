@@ -58,10 +58,12 @@ class ChatMessages extends Component {
             idCounter: id,
         })
 
-        //TODO implement and remove dispatch
-        this.props.gotMessage(message)
-        //this.props.connection.send(message)
+        this.props.connection.sendMessage(message)
     }
+    handleKeys = (event) => {
+        let key = event.key
+        if (key === "Enter") this.sendMessage()
+    };
 
 
     render() {
@@ -72,7 +74,8 @@ class ChatMessages extends Component {
                 )
             }
                 <Row>
-                    <input type={"text"} value={this.state.draftMessage} onChange={this.messageChange}/><Button
+                    <input type={"text"} value={this.state.draftMessage} onChange={this.messageChange}
+                           onKeyPress={this.handleKeys}/><Button
                     onClick={this.sendMessage}>Send</Button>
                 </Row>
             </Col>

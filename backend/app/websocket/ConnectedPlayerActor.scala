@@ -17,7 +17,7 @@ import game.components.{Piece, Player, Point3D, Type}
 import play.api.Logger
 import play.api.libs.json.{JsError, JsNull, JsPath, JsSuccess, JsValue, Json, Reads, Writes}
 import services.GameService
-import websocket.MatchManager.Moved
+import websocket.MatchManager.{ChatMessage, Moved}
 
 /**
  * Actor containing information on the GameId
@@ -46,7 +46,7 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
 
   val logger: Logger = Logger(this.getClass)
   // inform manager of new actor
-  logger.info(s"new client with gameId=$id")
+  logger.info(s"new client with gameId=$id  $self")
   manager ! MatchManager.NewClient(self, id)
 
 
@@ -57,6 +57,7 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
    */
   override def receive: Receive = {
     case Moved(move, id) => gameStatusAction()
+    case ChatMessage(id, message) => out ! message
 
     // initial case
     case value: JsValue =>
@@ -64,14 +65,20 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
       logger.info(command)
 
       command match {
-        case "submitMove" => submitMoveAction(value)
-        case "getAvailableMoves" => availableMovesAction(value)
-        case "getGameStatus" => gameStatusAction()
         case "ping" => out ! Json.obj("status" -> "pong")
+        case "message" => sendMessage(value)
+        case "getAvailableMoves" => availableMovesAction(value)
+        case "submitMove" => submitMoveAction(value)
+        case "getGameStatus" => gameStatusAction()
         case _ => logger.warn("unhandled message")
       }
 
     case default: Any => logger.error(s"unhandled in Receive $default")
+  }
+
+  def sendMessage(request: JsValue): Unit = {
+    logger.info("sendMessage")
+    manager ! MatchManager.ChatMessage(id, request)
   }
 
   /**
@@ -150,8 +157,7 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
    * remove self from MatchManager
    */
   override def postStop(): Unit = {
-    //TODO: enable when testing over
-    //manager ! MatchManager.Remove(id, self)
+    manager ! MatchManager.Remove(id, self)
   }
 
   /**

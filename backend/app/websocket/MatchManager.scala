@@ -13,9 +13,9 @@ package websocket
 
 import akka.actor.{Actor, ActorRef}
 import play.api.Logger
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsObject, JsValue, Json}
 import services.GameService
-import websocket.MatchManager.{Moved, NewClient, Remove}
+import websocket.MatchManager.{ChatMessage, Moved, NewClient, Remove}
 
 /**
  * MatchManager manages groups of ConnectedPlayerActors (Matches) and notifies them when
@@ -25,6 +25,12 @@ class MatchManager extends Actor {
   var participants: Map[Long, Set[ActorRef]] = Map.empty[Long, Set[ActorRef]].withDefaultValue(Set.empty[ActorRef])
 
   override def receive: Receive = {
+    case ChatMessage(id: Long, message: JsValue) => {
+      val response: JsObject = message.as[JsObject] + ("status" -> Json.toJson("ok"))
+      participants.apply(id).foreach(
+        client => client ! ChatMessage(id, response)
+      )
+    }
     case NewClient(client: ActorRef, id: Long) => {
       val clients = participants.apply(id) + client
       participants = participants + (id -> clients)
@@ -37,10 +43,11 @@ class MatchManager extends Actor {
       val clients = participants.apply(id).filter(_ != client)
       participants = participants + (id -> clients)
       logger.info("One player disconnected")
-      if (clients.isEmpty) {
-        GameService.remove(id)
-        logger.info(s"deleted game $id")
-      }
+      //TODO enable
+      //      if (clients.isEmpty) {
+      //        GameService.remove(id)
+      //        logger.info(s"deleted game $id")
+      //      }
     }
     case default => logger.error(s"unhandled in Receive $default")
   }
@@ -53,6 +60,8 @@ object MatchManager {
   case class Moved(move: JsValue, id: Long)
 
   case class Remove(id: Long, client: ActorRef)
+
+  case class ChatMessage(id: Long, message: JsValue)
 
 }
 

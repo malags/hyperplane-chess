@@ -10,34 +10,13 @@
  */
 
 import {combineReducers} from "redux";
-import {CHAT_SET_NAME, CHAT_SEND, CHAT_GOT} from "./actions";
+import {CHAT_SET_NAME, CHAT_SEND, CHAT_GOT, SET_CONNECTION, SET_GAME_ID} from "./actions";
 
 const initialState = require("./initialState.json")
 
-function setChatName(state = initialState, action) {
-    console.log(action)
-    if (action.type === CHAT_SET_NAME) {
-        return {
-            ...state,
-            name: action.name
-        }
-    }
-    return state
-}
-
-function messageReducer(state = initialState, action) {
-    switch (action.type) {
-        case CHAT_GOT:
-            return gotMessage(state, action)
-        case CHAT_SEND:
-            return state
-
-    }
-    return state
-}
-
 
 const gotMessage = (state, action) => {
+    console.log("got message")
     let tempMessages = [...state.messages, action.message]
     return {
         ...state,
@@ -47,23 +26,28 @@ const gotMessage = (state, action) => {
     }
 }
 
-// const rootReducer = combineReducers({
-//     name: setChatName,
-//     messages: messageReducer
-// })
 
 function reducer(state = initialState, action) {
-    console.log(action)
     switch (action.type) {
+        case CHAT_GOT:
+            return gotMessage(state, action)
+        case CHAT_SEND:
+            return {...state}
         case CHAT_SET_NAME:
             return {
                 ...state,
                 name: action.name
             }
-        case CHAT_GOT:
-            return gotMessage(state, action)
-        case CHAT_SEND:
-            return {...state}
+        case SET_CONNECTION:
+            return {
+                ...state,
+                connection: action.connection
+            }
+        case SET_GAME_ID:
+            return {
+                ...state,
+                gameId: action.gameId
+            }
         default:
             return {...state}
     }

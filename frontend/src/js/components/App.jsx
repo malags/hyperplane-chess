@@ -39,7 +39,7 @@ class App extends Component {
                         <Route path={"/game"} render={(props) => (<Game {...props}
                                                                         socket_url={window.location.href.replace("http", "ws") + "socket?id=" + 0}/>)}/>
                         <Route path={"/new-game"} component={NewGameForm}/>
-                        <Route path={"/connect"} component={GameConfiguration}/>
+                        <Route path={"/connect/:gameId"} component={GameConfiguration}/>
                         <link
                             rel="stylesheet"
                             href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"

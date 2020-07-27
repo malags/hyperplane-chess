@@ -14,10 +14,19 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
+import {connect} from 'react-redux'
+
+
+const mapStateToProps = (state) => {
+    return {
+        nrGroups: state.nrGroups,
+        connection: state.connection,
+        name: state.name
+    }
+}
 
 class GroupSelector extends Component {
     state = {
-        playerName: "",
         playersPerGroup: []
     }
 
@@ -25,9 +34,9 @@ class GroupSelector extends Component {
         let nrGroups = this.props.nrGroups
         let sets = new Array(nrGroups).fill().map(() => new Set())
 
-        let configConnection = this.props.configConnection
-        configConnection.addPlayerToGroup = this.addPlayerToGroup
-        configConnection.removePlayerFromGroup = this.removePlayerFromGroup
+        let configConnection = this.props.connection
+        // configConnection.addPlayerToGroup = this.addPlayerToGroup
+        // configConnection.removePlayerFromGroup = this.removePlayerFromGroup
 
         this.setState({
             playersPerGroup: sets
@@ -70,7 +79,9 @@ class GroupSelector extends Component {
      * @param e button click event
      */
     select = (groupId) => {
+        let name = this.props.name
         //TODO send data
+        //connection.???
     }
 
     _player = (groupId) => {
@@ -137,4 +148,4 @@ class GroupSelector extends Component {
     }
 }
 
-export default GroupSelector
+export default connect(mapStateToProps)(GroupSelector)

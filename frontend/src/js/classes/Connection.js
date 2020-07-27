@@ -9,11 +9,14 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import store from "../redux/Store"
+import {gotMessageAction} from "../redux/actions";
+
 /**
  * Connection to the server with websocket
  */
 class Connection {
-    constructor(socket_url, game) {
+    constructor(socket_url) {
         this.socket = new WebSocket(socket_url)
         this.socket.onopen = () => {
             console.log("connected")
@@ -32,17 +35,25 @@ class Connection {
                 this.socket.send(JSON.stringify({command: "ping"}))
             }
         }.bind(this), 50000);
+    }
 
+    setGame(game) {
         this.game = game
     }
 
 
     messageHandler(message) {
         let json = JSON.parse(message.data)
+        console.log("got message")
+        console.log(json.data)
         // submitMove / availableMoves / gameStatus
         if (json.status) {
             let command = json.command
             switch (command) {
+                case "message":
+                    console.log(json)
+                    console.log(gotMessageAction(json.data))
+                    store.dispatch(gotMessageAction(json.data))
                 case "submitMove": // received move done
                     console.log(json) //TODO actual action
                     break
@@ -90,6 +101,11 @@ class Connection {
 
     sendGetGameStatus() {
         this._send({command: "getGameStatus"})
+    }
+
+    sendMessage(message) {
+        console.log("sending message")
+        this._send({command: "message", data: message})
     }
 
     _send(message) {

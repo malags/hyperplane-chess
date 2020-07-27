@@ -27,7 +27,9 @@ const NavBar = () => {
                 </Nav>
                 <Form inline>
                     <Form.Control type="number" placeholder="Game ID" className="mr-sm-2"/>
-                    <Button variant="outline-success" to="/connect" as={Link}>Connect</Button>
+                    <Button variant="outline-success" to={"/connect/" + -1} onClick={(e) => {
+                        console.log(e.target)
+                    }} as={Link}>Connect</Button>
                 </Form>
             </Navbar.Collapse>
         </Navbar>

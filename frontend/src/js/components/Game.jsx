@@ -19,7 +19,8 @@ import Container from "react-bootstrap/Container";
 class Game extends Component {
     constructor(props) {
         super(props);
-        let connection = new Connection("ws://localhost:9000/socket?id=1", this)//new WebSocket(this.props.socket_url) //TODO change back
+        let connection = new Connection("ws://localhost:9000/socket?id=1")//new WebSocket(this.props.socket_url) //TODO change back
+        connection.setGame(this)
         this.state = {
             connection: connection,
             tile_size: 30,

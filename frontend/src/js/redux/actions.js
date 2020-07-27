@@ -16,6 +16,8 @@
 export const CHAT_SET_NAME = "CHAT_SET_NAME"
 export const CHAT_GOT = "CHAT_GOT"
 export const CHAT_SEND = "CHAT_SEND"
+export const SET_CONNECTION = "SET_CONNECTION"
+export const SET_GAME_ID = "SET_GAME_ID"
 
 /*
  * action creators
@@ -24,6 +26,15 @@ export const CHAT_SEND = "CHAT_SEND"
 export function setNameAction(name) {
     return {type: CHAT_SET_NAME, name}
 
+}
+
+export function setConnectionAction(connection) {
+    return {type: SET_CONNECTION, connection}
+
+}
+
+export function setGameIdAction(gameId) {
+    return {type: SET_GAME_ID, gameId}
 }
 
 export function gotMessageAction(message) {
