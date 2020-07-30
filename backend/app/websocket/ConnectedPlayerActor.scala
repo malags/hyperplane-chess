@@ -17,7 +17,7 @@ import game.components.{Piece, Player, Point3D, Type}
 import play.api.Logger
 import play.api.libs.json.{JsError, JsNull, JsPath, JsSuccess, JsValue, Json, Reads, Writes}
 import services.GameService
-import websocket.MatchManager.{ChatMessage, Moved}
+import websocket.MatchManager.{ChatMessage, Moved, Ready}
 
 /**
  * Actor containing information on the GameId
@@ -47,7 +47,7 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
   val logger: Logger = Logger(this.getClass)
   // inform manager of new actor
   logger.info(s"new client with gameId=$id  $self")
-  manager ! MatchManager.NewClient(self, id)
+  manager ! MatchManager.NewClient(id, self)
 
 
   /**
@@ -56,8 +56,9 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
    * @return
    */
   override def receive: Receive = {
-    case Moved(move, id) => gameStatusAction()
+    case Moved(id, move) => gameStatusAction()
     case ChatMessage(id, message) => out ! message
+    case Ready(id, client, request) => ???
 
     // initial case
     case value: JsValue =>
@@ -70,10 +71,15 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
         case "getAvailableMoves" => availableMovesAction(value)
         case "submitMove" => submitMoveAction(value)
         case "getGameStatus" => gameStatusAction()
+        case "ready" => setReady(value)
         case _ => logger.warn("unhandled message")
       }
 
     case default: Any => logger.error(s"unhandled in Receive $default")
+  }
+
+  def setReady(request: JsValue) = {
+    manager ! MatchManager.Ready(id, self, request)
   }
 
   def sendMessage(request: JsValue): Unit = {
@@ -104,7 +110,7 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
     out ! Json.obj("status" -> (if (status) "ok" else "failed"))
 
     // notify other clients of updated Game status
-    if (status) manager ! MatchManager.Moved(request, id)
+    if (status) manager ! MatchManager.Moved(id, request)
   }
 
   private def availableMovesAction(request: JsValue): Unit = {

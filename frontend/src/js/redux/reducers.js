@@ -10,7 +10,15 @@
  */
 
 import {combineReducers} from "redux";
-import {CHAT_SET_NAME, CHAT_SEND, CHAT_GOT, SET_CONNECTION, SET_GAME_ID} from "./actions";
+import {
+    CHAT_SET_NAME,
+    CHAT_SEND,
+    CHAT_GOT,
+    SET_CONNECTION,
+    SET_GAME_ID,
+    PLAYER_READY,
+    SET_PLAYERS_PER_GROUP
+} from "./actions";
 
 const initialState = require("./initialState.json")
 
@@ -47,6 +55,16 @@ function reducer(state = initialState, action) {
             return {
                 ...state,
                 gameId: action.gameId
+            }
+        case PLAYER_READY:
+            return {
+                ...state,
+
+            }
+        case SET_PLAYERS_PER_GROUP:
+            return {
+                ...state,
+                playersPerGroup: action.playersPerGroup
             }
         default:
             return {...state}

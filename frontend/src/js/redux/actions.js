@@ -18,6 +18,9 @@ export const CHAT_GOT = "CHAT_GOT"
 export const CHAT_SEND = "CHAT_SEND"
 export const SET_CONNECTION = "SET_CONNECTION"
 export const SET_GAME_ID = "SET_GAME_ID"
+export const SET_PLAYERS_PER_GROUP = "SET_PLAYERS_PER_GROUP"
+export const PLAYER_READY = "PLAYER_READY"
+
 
 /*
  * action creators
@@ -43,4 +46,12 @@ export function gotMessageAction(message) {
 
 export function sendMessageAction(message) {
     return {type: CHAT_SEND, message}
+}
+
+export function setPlayersPerGroupAction(playersPerGroup) {
+    return {type: SET_PLAYERS_PER_GROUP, playersPerGroup}
+}
+
+export function playerReadyAction(readyState) {
+    return {type: PLAYER_READY, readyState}
 }

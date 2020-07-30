@@ -3,5 +3,7 @@
   "messages": [],
   "break_size": 256,
   "connection": "",
-  "gameId": -1
+  "gameId": -1,
+  "nrGroups": 2,
+  "playersPerGroup": []
 }

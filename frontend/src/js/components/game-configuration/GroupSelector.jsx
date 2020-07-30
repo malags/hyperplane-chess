@@ -15,20 +15,25 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import {connect} from 'react-redux'
+import {setPlayersPerGroupAction} from "../../redux/actions";
 
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        setPlayersPerGroup: (playersPerGroup) => dispatch(setPlayersPerGroupAction(playersPerGroup))
+    }
+}
 
 const mapStateToProps = (state) => {
     return {
         nrGroups: state.nrGroups,
         connection: state.connection,
+        playersPerGroup: state.playersPerGroup,
         name: state.name
     }
 }
 
 class GroupSelector extends Component {
-    state = {
-        playersPerGroup: []
-    }
 
     componentDidMount() {
         let nrGroups = this.props.nrGroups
@@ -38,9 +43,7 @@ class GroupSelector extends Component {
         // configConnection.addPlayerToGroup = this.addPlayerToGroup
         // configConnection.removePlayerFromGroup = this.removePlayerFromGroup
 
-        this.setState({
-            playersPerGroup: sets
-        })
+        this.props.setPlayersPerGroup(sets)
         this.select(0)
 
     }
@@ -51,13 +54,10 @@ class GroupSelector extends Component {
      * @param playerName player name to add to the list
      * @param groupId index of the group
      */
-    addPlayerToGroup(playerName, groupId) {
-        let playersPerGroup = [...this.state.playersPerGroup]
-        playersPerGroup[groupId].add(playerName)
-
-        this.setState({
-            playersPerGroup: playersPerGroup
-        })
+    addPlayerToGroup(groupId, playerName, ready) {
+        let playersPerGroup = [...this.props.playersPerGroup]
+        playersPerGroup[groupId].add({playerName, ready})
+        this.props.setPlayersPerGroup(playersPerGroup)
     }
 
     /**
@@ -65,13 +65,10 @@ class GroupSelector extends Component {
      * @param playerName player name to remove from the list
      * @param groupId index of the group
      */
-    removePlayerFromGroup(playerName, groupId) {
-        let playersPerGroup = [...this.state.playersPerGroup]
-        playersPerGroup[groupId].remove(playerName)
-
-        this.setState({
-            playersPerGroup: playersPerGroup
-        })
+    removePlayerFromGroup(groupId, playerName) {
+        let playersPerGroup = [...this.props.playersPerGroup]
+        let filtered = playersPerGroup[groupId].filter(player => player.playerName !== playerName)
+        this.props.setPlayersPerGroup(filtered)
     }
 
     /**
@@ -79,17 +76,18 @@ class GroupSelector extends Component {
      * @param e button click event
      */
     select = (groupId) => {
+        console.log("join " + groupId)
         let name = this.props.name
         //TODO send data
         //connection.???
     }
 
     _player = (groupId) => {
-        let setsArray = this.state.playersPerGroup
+        let setsArray = this.props.playersPerGroup
         if (setsArray === undefined || setsArray.length === 0) return
         else return (
             <Col key={groupId}>{
-                [...setsArray[groupId]].map(player => <p key={player}>{player}</p>)}
+                [...setsArray[groupId]].map(player => <p key={player.playerName}>{player.playerName}</p>)}
             </Col>)
     }
 
@@ -122,7 +120,7 @@ class GroupSelector extends Component {
     _buttons = () => {
         return this._create((i) => {
             return <Col key={"button_" + i}>
-                <Button onClick={this.select(i)}>Join</Button>
+                <Button onClick={() => this.select(i)}>Join</Button>
             </Col>
         })
     }
@@ -148,4 +146,4 @@ class GroupSelector extends Component {
     }
 }
 
-export default connect(mapStateToProps)(GroupSelector)
+export default connect(mapStateToProps, mapDispatchToProps)(GroupSelector)

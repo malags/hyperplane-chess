@@ -10,7 +10,7 @@
  */
 
 import store from "../redux/Store"
-import {gotMessageAction} from "../redux/actions";
+import {gotMessageAction, playerReadyAction} from "../redux/actions";
 
 /**
  * Connection to the server with websocket
@@ -63,6 +63,8 @@ class Connection {
                 case "gameStatus":
                     this.game.updateGame(json)
                     break
+                case "ready":
+                    store.dispatch(playerReadyAction(json.data))
                 default:
                     console.log(json)
             }
@@ -106,6 +108,10 @@ class Connection {
     sendMessage(message) {
         console.log("sending message")
         this._send({command: "message", data: message})
+    }
+
+    sendSetReady(name, isReady) {
+        this._send({command: "ready", data: {name, ready: isReady}})
     }
 
     _send(message) {

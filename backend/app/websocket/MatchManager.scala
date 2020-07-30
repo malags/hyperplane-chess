@@ -15,7 +15,7 @@ import akka.actor.{Actor, ActorRef}
 import play.api.Logger
 import play.api.libs.json.{JsObject, JsValue, Json}
 import services.GameService
-import websocket.MatchManager.{ChatMessage, Moved, NewClient, Remove}
+import websocket.MatchManager.{ChatMessage, Moved, NewClient, Ready, Remove}
 
 /**
  * MatchManager manages groups of ConnectedPlayerActors (Matches) and notifies them when
@@ -24,20 +24,20 @@ class MatchManager extends Actor {
   val logger = Logger(this.getClass)
   var participants: Map[Long, Set[ActorRef]] = Map.empty[Long, Set[ActorRef]].withDefaultValue(Set.empty[ActorRef])
 
+  private def addStatusOk(request: JsValue): JsObject = request.as[JsObject] + ("status" -> Json.toJson("ok"))
+
   override def receive: Receive = {
-    case ChatMessage(id: Long, message: JsValue) => {
-      val response: JsObject = message.as[JsObject] + ("status" -> Json.toJson("ok"))
-      participants.apply(id).foreach(
-        client => client ! ChatMessage(id, response)
-      )
-    }
-    case NewClient(client: ActorRef, id: Long) => {
+    case ChatMessage(id: Long, message: JsValue) => participants.apply(id).foreach(
+      _ ! ChatMessage(id, addStatusOk(message))
+    )
+
+    case NewClient(id: Long, client: ActorRef) => {
       val clients = participants.apply(id) + client
       participants = participants + (id -> clients)
     }
-    case Moved(move: JsValue, id: Long) => {
+    case moved@Moved(id: Long, move: JsValue) => {
       logger.info(s"moved $move")
-      participants.apply(id).foreach(client => client ! Moved(move, id))
+      participants.apply(id).foreach(_ ! moved)
     }
     case Remove(id: Long, client: ActorRef) => {
       val clients = participants.apply(id).filter(_ != client)
@@ -49,19 +49,30 @@ class MatchManager extends Actor {
       //        logger.info(s"deleted game $id")
       //      }
     }
+
+    case Ready(id: Long, client: ActorRef, request: JsValue) => {
+      //TODO add rest of logic
+      val response: JsObject = addStatusOk(request)
+      // set player ready in builder
+      // set ready in clients
+      participants.apply(id).foreach(_ ! response)
+      // if can build, do so and inform clients
+    }
     case default => logger.error(s"unhandled in Receive $default")
   }
 }
 
 object MatchManager {
 
-  case class NewClient(client: ActorRef, id: Long)
+  case class NewClient(id: Long, client: ActorRef)
 
-  case class Moved(move: JsValue, id: Long)
+  case class Moved(id: Long, move: JsValue)
 
   case class Remove(id: Long, client: ActorRef)
 
   case class ChatMessage(id: Long, message: JsValue)
+
+  case class Ready(id: Long, client: ActorRef, request: JsValue)
 
 }
 

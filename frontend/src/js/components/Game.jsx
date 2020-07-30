@@ -10,7 +10,6 @@
  */
 
 import React, {Component} from "react";
-import ReactDOM from "react-dom";
 import Connection from "../classes/Connection"
 import * as PIXI from 'pixi.js'
 import Row from "react-bootstrap/Row";
