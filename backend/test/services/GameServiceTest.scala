@@ -22,6 +22,7 @@ import play.api.libs.json.{JsValue, Json}
 class GameServiceTest extends PlaySpec {
 
   val players: Array[Player] = Array(Player(0, 0), Player(1, 1))
+  val id = 0
   val movementFile: JsValue = Json.parse(
     """{
           "pieces": [
@@ -37,7 +38,7 @@ class GameServiceTest extends PlaySpec {
 
   "GameService newGame" should {
     "create a new game and return associated ID" in {
-      val result = GameService.newGame(players, nrPlanes = 2, boardSize = 6, movementFile, piecesPosition)
+      val result = GameService.newGame(players, nrPlanes = 2, boardSize = 6, movementFile, piecesPosition, id)
       result mustBe 0
       val piecesInBoard = GameService.getPiecesInBoard(result)
       piecesInBoard.nonEmpty mustBe true
@@ -47,7 +48,7 @@ class GameServiceTest extends PlaySpec {
     "reject wrong piecesPosition" in {
       val piecesPosition: List[String] = List("")
       try {
-        GameService.newGame(players, nrPlanes = 2, boardSize = 6, movementFile, piecesPosition)
+        GameService.newGame(players, nrPlanes = 2, boardSize = 6, movementFile, piecesPosition, id)
         fail()
       }
       catch {
@@ -63,14 +64,16 @@ class GameServiceTest extends PlaySpec {
 
   "GameService" should {
     "return the number of planes" in {
-      val result = GameService.newGame(players, nrPlanes = 2, boardSize = 6, movementFile, piecesPosition)
-      result mustBe 1
+      val id = 1
+      val result = GameService.newGame(players, nrPlanes = 2, boardSize = 6, movementFile, piecesPosition, id)
+      result mustBe id
       GameService.getNrPlanes(result) mustBe Some(2)
     }
 
     "return the boardSize" in {
-      val result = GameService.newGame(players, nrPlanes = 2, boardSize = 6, movementFile, piecesPosition)
-      result mustBe 2
+      val id = 2
+      val result = GameService.newGame(players, nrPlanes = 2, boardSize = 6, movementFile, piecesPosition, id)
+      result mustBe id
       GameService.getBoardSize(result) mustBe Some(6)
     }
 

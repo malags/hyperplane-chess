@@ -11,16 +11,14 @@
 
 package websocket
 
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.stream.Materializer
-import game.components.{Player, Point3D}
 import javax.inject.Inject
 import play.api.Logger
-import play.api.libs.json.{JsLookupResult, JsValue, Json, Reads}
+import play.api.libs.json.{JsLookupResult, JsValue, Json}
 import play.api.libs.streams.ActorFlow
 import play.api.mvc._
-import services.GameService
-import websocket.MatchManager.{Moved, NewClient, Remove}
+import services.{GameBuilderService}
 
 class GameController @Inject()(cc: ControllerComponents)(implicit system: ActorSystem, mat: Materializer)
   extends AbstractController(cc) {
@@ -32,7 +30,6 @@ class GameController @Inject()(cc: ControllerComponents)(implicit system: ActorS
   val manager: ActorRef = system.actorOf(Props[MatchManager], "Manager")
 
   def newGame(): Action[AnyContent] = Action {
-    val players: Array[Player] = Array(Player(0, 0), Player(1, 1))
     val movementFile: JsValue = Json.parse(
       """{
           "pieces": [
@@ -45,8 +42,8 @@ class GameController @Inject()(cc: ControllerComponents)(implicit system: ActorS
          }"""
     )
     val piecesPosition: List[String] = List("", "", "TEST_PIECE", "TEST_PIECE", "", "", "", "TEST_PIECE", "TEST_PIECE", "", "", "", "", "", "", "", "", "")
-    val id = GameService.newGame(players, nrPlanes = 2, boardSize = 6, movementFile, piecesPosition)
-    Ok(Json.obj("id" -> id))
+    val id = GameBuilderService.newBuilder(nrPlanes = 2, nrPlayers = 2, boardSize = 6, movementFile, piecesPosition)
+    Redirect(s"/connect/$id")
   }
 
   def socket(id: Long): WebSocket = WebSocket.accept[JsValue, JsValue] { request =>
@@ -55,24 +52,34 @@ class GameController @Inject()(cc: ControllerComponents)(implicit system: ActorS
     }
   }
 
-  def postNewGame() = Action { request =>
+  def postNewGame(): Action[AnyContent] = Action { request =>
     val body: Option[String] = request.body.asText
     body match {
       case Some(txt) => {
         val jsonBody: JsValue = Json.parse(txt)
 
-        val jsNrPlanes: JsLookupResult = (jsonBody \ "nrBoards")
-        val jsBoardsSize: JsLookupResult = (jsonBody \ "boardSize")
-        val jsMovementFile: JsLookupResult = (jsonBody \ "movementFile")
-        val jsPiecesPositions: JsLookupResult = (jsonBody \ "piecesPosition")
-        if (jsNrPlanes.isDefined && jsBoardsSize.isDefined && jsMovementFile.isDefined && jsPiecesPositions.isDefined) {
+        val jsNrPlanes: JsLookupResult = jsonBody \ "nrBoards"
+        val jsNrPlayers: JsLookupResult = jsonBody \ "nrPlayers"
+        val jsBoardsSize: JsLookupResult = jsonBody \ "boardSize"
+        val jsMovementFile: JsLookupResult = jsonBody \ "movementFile"
+        val jsPiecesPositions: JsLookupResult = jsonBody \ "piecesPosition"
+        if (jsNrPlanes.isDefined &&
+          jsNrPlayers.isDefined &&
+          jsBoardsSize.isDefined &&
+          jsMovementFile.isDefined &&
+          jsPiecesPositions.isDefined) {
 
           try {
             val mov = jsMovementFile.get
-            //TODO: remove hardcoding of player
-            val id: Long = GameService.newGame(players = Array(Player(0, 0), Player(1, 1)), jsNrPlanes.as[Int], jsBoardsSize.as[Int], mov, jsPiecesPositions.as[List[String]])
+            val id: Long = GameBuilderService.newBuilder(
+              jsNrPlanes.as[Int],
+              jsNrPlayers.as[Int],
+              jsBoardsSize.as[Int],
+              mov,
+              jsPiecesPositions.as[List[String]]
+            )
 
-            Ok(s"nice $id")
+            Ok(Json.obj("url" -> s"/connect/$id"))
           }
           catch {
             case e: Throwable => BadRequest(e.getMessage)

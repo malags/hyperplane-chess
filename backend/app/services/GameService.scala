@@ -37,17 +37,23 @@ object GameService {
    * @param piecesPosition CSV (no header) representing the starting position of the boards
    * @return ID of the Game
    */
-  def newGame(players: Array[Player], nrPlanes: Int, boardSize: Int, movementFile: JsValue, piecesPosition: List[String]): Long = {
+  def newGame(players: Array[Player], nrPlanes: Int, boardSize: Int, movementFile: JsValue, piecesPosition: List[String], id: Long): Long = {
 
     val game: Game = new Game(players, nrPlanes, boardSize, movementFile)
     val boardConfigurator: BoardConfigurator = BoardConfigurator(piecesPosition)
 
     if (!game.init(boardConfigurator)) throw new IllegalArgumentException("Invalid format for pieces position")
 
-    val id = n.getAndIncrement()
     mapIdToGame.put(id, game)
     id
   }
+
+  /**
+   * Book an ID for a Game
+   *
+   * @return the ID of the Game
+   */
+  def requestId(): Long = n.getAndIncrement()
 
 
   /**

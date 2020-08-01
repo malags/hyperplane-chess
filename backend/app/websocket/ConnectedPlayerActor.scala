@@ -60,6 +60,8 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
     case ChatMessage(id, message) => out ! message
     case Ready(id, client, request) => ???
 
+    //TODO: add changes to builder and build on ready
+
     // initial case
     case value: JsValue =>
       val command = (value \ "command").getOrElse(Json.toJson("No command in Json")).as[String]

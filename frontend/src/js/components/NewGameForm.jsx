@@ -76,8 +76,7 @@ class NewGameForm extends Component {
         fetch(this.url, request)
             .then(response => {
                 if (response.status >= 200 && response.status < 300) {
-                    console.log(response)
-                    window.location.reload();
+                    response.json().then(json => this.props.history.push(json.url))
                 } else {
                     console.log(response)
                     response.text().then(error => alert(error))

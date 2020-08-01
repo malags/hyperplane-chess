@@ -44,8 +44,6 @@ class Connection {
 
     messageHandler(message) {
         let json = JSON.parse(message.data)
-        console.log("got message")
-        console.log(json.data)
         // submitMove / availableMoves / gameStatus
         if (json.status) {
             let command = json.command
