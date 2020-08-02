@@ -18,7 +18,7 @@ import play.api.libs.json.{JsValue, Json}
 
 class MovementManagerTest extends PlaySpec {
   //,(x,x,0),(2x,2x,0),(0,1,z)
-  val player: Player = Player(0, 0)
+  val player: Player = Player(0, 0, "p1")
   val piece: Piece = Piece(player = player, pieceType = Type("TEST_PIECE"), position = Point3D(5, 5, 0), Facing.DOWN)
 
   "movementManager" should {

@@ -27,9 +27,6 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 class GameConfiguration extends Component {
-    state = {
-        groupId: -1
-    }
 
     componentDidMount() {
         let gameId = this.props.match.params.gameId

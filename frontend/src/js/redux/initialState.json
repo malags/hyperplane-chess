@@ -4,6 +4,11 @@
   "break_size": 256,
   "connection": "",
   "gameId": -1,
+  "player": {
+    "playerId": -1,
+    "groupId": -1,
+    "name": ""
+  },
   "nrGroups": 2,
   "playersPerGroup": []
 }

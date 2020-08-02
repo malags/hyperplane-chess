@@ -26,7 +26,7 @@ const _setName = (dispatch, e) => {
 }
 
 function mapStateToProps(state, ownProps) {
-    return {name: state.name}
+    return {name: state.player.name}
 }
 
 

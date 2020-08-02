@@ -21,7 +21,7 @@ import play.api.libs.json.{JsValue, Json}
 
 class GameServiceTest extends PlaySpec {
 
-  val players: Array[Player] = Array(Player(0, 0), Player(1, 1))
+  val players: Array[Player] = Array(Player(0, 0, "p1"), Player(1, 1, "p2"))
   val id = 0
   val movementFile: JsValue = Json.parse(
     """{

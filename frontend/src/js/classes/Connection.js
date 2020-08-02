@@ -10,7 +10,7 @@
  */
 
 import store from "../redux/Store"
-import {gotMessageAction, playerReadyAction} from "../redux/actions";
+import {gotMessageAction, playerReadyAction, setGroupIdAction, setPlayerIdAction} from "../redux/actions";
 
 /**
  * Connection to the server with websocket
@@ -47,25 +47,50 @@ class Connection {
         // submitMove / availableMoves / gameStatus
         if (json.status) {
             let command = json.command
-            switch (command) {
-                case "message":
-                    console.log(json)
-                    console.log(gotMessageAction(json.data))
-                    store.dispatch(gotMessageAction(json.data))
-                case "submitMove": // received move done
-                    console.log(json) //TODO actual action
-                    break
-                case "availableMoves":  // requested moves for some position
-                    this.game.updateAvailable(json)
-                    break
-                case "gameStatus":
-                    this.game.updateGame(json)
-                    break
-                case "ready":
-                    store.dispatch(playerReadyAction(json.data))
-                default:
-                    console.log(json)
-            }
+            this.gameHandler(command, json)
+            this.chatHandler(command, json)
+            this.gameConfigHandler(command, json)
+        }
+    }
+
+    gameHandler(command, json) {
+        switch (command) {
+            case "submitMove": // received move done
+                console.log(json) //TODO actual action
+                break
+            case "availableMoves":  // requested moves for some position
+                this.game.updateAvailable(json)
+                break
+            case "gameStatus":
+                this.game.updateGame(json)
+                break
+            default:
+        }
+    }
+
+    chatHandler(command, json) {
+        switch (command) {
+            case "message":
+                console.log(json)
+                console.log(gotMessageAction(json.data))
+                store.dispatch(gotMessageAction(json.data))
+            default:
+        }
+    }
+
+    gameConfigHandler(command, json) {
+        switch (command) {
+            case "ready":
+                store.dispatch(playerReadyAction(json.data))
+                break
+            case "setGroupId":
+                store.dispatch(setGroupIdAction(json.data)) //TODO check
+                break
+            case "setPlayerId":
+                store.dispatch(setPlayerIdAction(json.data)) //TODO check
+                break
+            default:
+
         }
     }
 

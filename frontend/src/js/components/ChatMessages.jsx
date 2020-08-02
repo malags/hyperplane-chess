@@ -18,7 +18,7 @@ import {gotMessageAction} from "../redux/actions";
 
 const mapStateToProps = (state) => {
     return {
-        name: state.name,
+        name: state.player.name,
         messages: state.messages,
         break_size: state.break_size,
         connection: state.connection

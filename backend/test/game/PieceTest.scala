@@ -17,8 +17,8 @@ import play.api.libs.json.{JsValue, Json}
 
 class PieceTest extends PlaySpec {
 
-  val player: Player = Player(0, 0)
-  val opponent: Player = Player(1, 1)
+  val player: Player = Player(0, 0, "p1")
+  val opponent: Player = Player(1, 1, "p2")
   val type_t: Type = Type("TEST_PIECE")
 
   val myPiece: Piece = Piece(player, type_t, Point3D(5, 5, 0), Facing.DOWN)

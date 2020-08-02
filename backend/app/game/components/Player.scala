@@ -16,4 +16,4 @@ package game.components
  * @param playerId number representing the player
  * @param groupId  number representing the group of the player
  */
-case class Player(playerId: Int, groupId: Int)
+case class Player(playerId: Int, groupId: Int, name: String)

@@ -31,7 +31,7 @@ import play.api.libs.json.{JsValue, Json}
 
 class BoardsTest extends PlaySpec {
 
-  val player: Player = Player(0, 0)
+  val player: Player = Player(0, 0, "p1")
   val type_t: Type = Type("")
   val facing: Facing = Facing.DOWN
 

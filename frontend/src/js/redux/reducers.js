@@ -17,7 +17,7 @@ import {
     SET_CONNECTION,
     SET_GAME_ID,
     PLAYER_READY,
-    SET_PLAYERS_PER_GROUP
+    SET_PLAYERS_PER_GROUP, SET_GROUP_ID, SET_PLAYER_ID
 } from "./actions";
 
 const initialState = require("./initialState.json")
@@ -44,7 +44,26 @@ function reducer(state = initialState, action) {
         case CHAT_SET_NAME:
             return {
                 ...state,
-                name: action.name
+                player: {
+                    ...state.player,
+                    name: action.name,
+                }
+            }
+        case SET_GROUP_ID:
+            return {
+                ...state,
+                player: {
+                    ...state.player,
+                    groupId: action.groupId
+                }
+            }
+        case SET_PLAYER_ID:
+            return {
+                ...state,
+                player: {
+                    ...state.player,
+                    playerId: action.playerId
+                }
             }
         case SET_CONNECTION:
             return {
@@ -54,7 +73,10 @@ function reducer(state = initialState, action) {
         case SET_GAME_ID:
             return {
                 ...state,
-                gameId: action.gameId
+                player: {
+                    ...state.player,
+                    gameId: action.gameId,
+                }
             }
         case PLAYER_READY:
             return {

@@ -47,8 +47,8 @@ object GameBuilderService {
     id
   }
 
-  def setGroupForPlayer(id: Long, playerId: Int, groupId: Int): Unit = mapIdToGameBuilder.apply(id)
-    .setGroupForPlayer(playerId, groupId)
+  def setGroupForPlayer(id: Long, playerId: Int, groupId: Int, name: String): Unit = mapIdToGameBuilder.apply(id)
+    .setGroupForPlayer(playerId, groupId, name)
 
   def build(id: Long) = {
     logger.info(s"build $id")
@@ -62,9 +62,9 @@ object GameBuilderService {
     val logger = Logger(this.getClass)
     var players: Array[Player] = Array.ofDim[Player](nrPlayers)
 
-    def setGroupForPlayer(playerId: Int, groupId: Int): Unit = {
+    def setGroupForPlayer(playerId: Int, groupId: Int, name: String): Unit = {
       logger.info(s"setGroupForPlayer playerId=$playerId groupId=$groupId")
-      val player: Player = Player(playerId, groupId)
+      val player: Player = Player(playerId, groupId, name)
       players(playerId) = player
     }
 

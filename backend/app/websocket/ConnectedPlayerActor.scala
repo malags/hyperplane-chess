@@ -100,11 +100,12 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
     val data = (request \ "data").get
     val fromJs = Json.fromJson[Point3D]((data \ "from").get)
     val toJs = Json.fromJson[Point3D]((data \ "to").get)
+    val playerJs = Json.fromJson[Player]((data \ "player").get)
     var status = false
 
-    (fromJs, toJs) match {
-      case (JsSuccess(from, _), JsSuccess(to, _)) =>
-        status = GameService.submitMove(id, from, to, Player(0, 0))
+    (fromJs, toJs, playerJs) match {
+      case (JsSuccess(from, _), JsSuccess(to, _), JsSuccess(player, _)) =>
+        status = GameService.submitMove(id, from, to, player)
       case _ =>
     }
 

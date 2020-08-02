@@ -14,6 +14,8 @@
  * action types
  */
 export const CHAT_SET_NAME = "CHAT_SET_NAME"
+export const SET_PLAYER_ID = "SET_PLAYER_ID"
+export const SET_GROUP_ID = "SET_GROUP_ID"
 export const CHAT_GOT = "CHAT_GOT"
 export const CHAT_SEND = "CHAT_SEND"
 export const SET_CONNECTION = "SET_CONNECTION"
@@ -29,6 +31,14 @@ export const PLAYER_READY = "PLAYER_READY"
 export function setNameAction(name) {
     return {type: CHAT_SET_NAME, name}
 
+}
+
+export function setPlayerIdAction(playerId) {
+    return {type: SET_PLAYER_ID, playerId}
+}
+
+export function setGroupIdAction(groupId) {
+    return {type: SET_GROUP_ID, groupId}
 }
 
 export function setConnectionAction(connection) {

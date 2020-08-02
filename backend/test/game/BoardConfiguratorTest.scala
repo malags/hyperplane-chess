@@ -19,7 +19,7 @@ import play.api.libs.json.{JsValue, Json}
 
 class BoardConfiguratorTest extends PlaySpec {
 
-  val player: Player = Player(0, 0)
+  val player: Player = Player(0, 0, "")
   val type_t: Type = Type("")
   val facing: Facing = Facing.DOWN
 
@@ -63,7 +63,7 @@ class BoardConfiguratorTest extends PlaySpec {
     }
 
     "initialize the board" in {
-      val players = Array(Player(0, 0), Player(1, 1))
+      val players = Array(Player(0, 0, "p1"), Player(1, 1, "p2"))
       val movementManager: MovementManager = MovementManager(nrPlanes = 2, boardSize = 6, jsonString)
       val boards: Boards = Boards(movementManager)
 

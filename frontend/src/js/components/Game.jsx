@@ -14,19 +14,39 @@ import Connection from "../classes/Connection"
 import * as PIXI from 'pixi.js'
 import Row from "react-bootstrap/Row";
 import Container from "react-bootstrap/Container";
+import {gotMessageAction} from "../redux/actions";
+
+const mapStateToProps = (state) => {
+    return {
+        player: state.player,
+        messages: state.messages,
+        break_size: state.break_size,
+        connection: state.connection
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        gotMessage: (message) => dispatch(gotMessageAction(message))
+    }
+}
+
+/**
+ * enum for drawing order in PixiJS
+ * @type {{BOARD: number, MOVES: number, PIECES: number}}
+ */
+const layer = {
+    "BOARD": 0,
+    "MOVES": 1,
+    "PIECES": 2
+}
 
 class Game extends Component {
     constructor(props) {
         super(props);
-        let connection = new Connection("ws://localhost:9000/socket?id=1")//new WebSocket(this.props.socket_url) //TODO change back
-        connection.setGame(this)
         this.state = {
-            connection: connection,
             tile_size: 30,
             selectedPos: null,
-            player: {
-                playerId: 0, groupId: 0
-            },
             nrBoards: 0,
             boardSize: 6,
             pieces: null
@@ -39,6 +59,8 @@ class Game extends Component {
             type = "canvas"
         }
         PIXI.utils.sayHello(type)
+
+        this.props.connection.setGame(this)
 
 
         let pixi = new PIXI.Application({
@@ -76,7 +98,7 @@ class Game extends Component {
     }
 
     componentWillUnmount() {
-        this.state.connection.close()
+        this.props.connection.close()
     }
 
     drawNBoards() {
@@ -124,7 +146,8 @@ class Game extends Component {
     _redrawGame() {
         console.log("redraw")
         this.drawNBoards()
-        this.state.pixi.stage.children[1].removeChildren()
+        this.state.pixi.stage.children[layer.MOVES].removeChildren()
+        this.state.pixi.stage.children[layer.PIECES].removeChildren()
         for (let piece in this.state.pieces) {
             this._drawPiece(this.state.pieces[piece])
         }
@@ -153,7 +176,7 @@ class Game extends Component {
         let sprite = new PIXI.Sprite(texture);
         sprite.x = x + 5
         sprite.y = y + 5
-        this.state.pixi.stage.children[2].addChild(sprite)
+        this.state.pixi.stage.children[layer.PIECES].addChild(sprite)
 
     }
 
@@ -197,7 +220,8 @@ class Game extends Component {
     }
 
     updateAvailable(json) {
-        this.state.pixi.stage.children[2].removeChildren()
+        this.state.pixi.stage.children[layer.MOVES].removeChildren()
+        this.state.pixi.stage.children[layer.PIECES].removeChildren()
         if (json)
             this._addAvailableMoves(json.data)
         this._redrawGame()
@@ -219,7 +243,7 @@ class Game extends Component {
             let [x, y] = this._pointToCoord(pos)
             square.x = x
             square.y = y
-            this.state.pixi.stage.children[2].addChild(square)
+            this.state.pixi.stage.children[layer.MOVES].addChild(square)
         }
 
     }
@@ -247,14 +271,14 @@ class Game extends Component {
             if (this.state.selectedPos != null) {
                 // submitMove
                 console.log("send move")
-                this.state.connection.sendMove(this.state.selectedPos, point, this.state.player)
+                this.props.connection.sendMove(this.state.selectedPos, point, this.props.player)
                 this.setState({selectedPos: null})
                 this.updateAvailable()
             } else {
                 console.log("selected")
                 // request available moves
                 this.setState({selectedPos: point})
-                this.state.connection.sendAvailMovesRequest(point, this.state.player)
+                this.props.connection.sendAvailMovesRequest(point, this.props.player)
                 this.updateAvailable()
             }
         }
@@ -262,7 +286,7 @@ class Game extends Component {
         square.interactive = true
         square.on('touchstart', click);
         square.on("mousedown", click)
-        this.state.pixi.stage.children[0].addChild(square)
+        this.state.pixi.stage.children[layer.BOARD].addChild(square)
     }
 
     render() {

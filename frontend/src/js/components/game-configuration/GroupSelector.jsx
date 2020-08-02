@@ -29,7 +29,7 @@ const mapStateToProps = (state) => {
         nrGroups: state.nrGroups,
         connection: state.connection,
         playersPerGroup: state.playersPerGroup,
-        name: state.name
+        name: state.player.name
     }
 }
 
@@ -67,7 +67,7 @@ class GroupSelector extends Component {
      */
     removePlayerFromGroup(groupId, playerName) {
         let playersPerGroup = [...this.props.playersPerGroup]
-        let filtered = playersPerGroup[groupId].filter(player => player.playerName !== playerName)
+        let filtered = playersPerGroup[groupId].filter(player => player.name !== playerName)
         this.props.setPlayersPerGroup(filtered)
     }
 
@@ -87,7 +87,7 @@ class GroupSelector extends Component {
         if (setsArray === undefined || setsArray.length === 0) return
         else return (
             <Col key={groupId}>{
-                [...setsArray[groupId]].map(player => <p key={player.playerName}>{player.playerName}</p>)}
+                [...setsArray[groupId]].map(player => <p key={player.name}>{player.name}</p>)}
             </Col>)
     }
 
