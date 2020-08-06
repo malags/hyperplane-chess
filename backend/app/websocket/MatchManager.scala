@@ -15,7 +15,7 @@ import akka.actor.{Actor, ActorRef}
 import play.api.Logger
 import play.api.libs.json.{JsObject, JsValue, Json}
 import services.GameService
-import websocket.MatchManager.{ChatMessage, Moved, NewClient, Ready, Remove}
+import websocket.MatchManager.{ChatMessage, Moved, NewClient, Ready, Remove, SetPlayer}
 
 /**
  * MatchManager manages groups of ConnectedPlayerActors (Matches) and notifies them when
@@ -58,6 +58,9 @@ class MatchManager extends Actor {
       participants.apply(id).foreach(_ ! response)
       // if can build, do so and inform clients
     }
+
+    case setPlayer@SetPlayer(id: Long, _) => participants.apply(id).foreach(_ ! setPlayer)
+
     case default => logger.error(s"unhandled in Receive $default")
   }
 }
@@ -73,6 +76,8 @@ object MatchManager {
   case class ChatMessage(id: Long, message: JsValue)
 
   case class Ready(id: Long, client: ActorRef, request: JsValue)
+
+  case class SetPlayer(id: Long, request: JsValue)
 
 }
 

@@ -25,8 +25,12 @@ const _setName = (dispatch, e) => {
     if (newName.length < 15) dispatch(setNameAction(newName))
 }
 
-function mapStateToProps(state, ownProps) {
-    return {name: state.player.name}
+function mapStateToProps(state) {
+    return {
+        name: state.player.name,
+        player: state.player,
+        connection: state.connection
+    }
 }
 
 
@@ -38,6 +42,13 @@ const mapDispatchToProps = (dispatch) => {
 
 class Chat extends Component {
 
+    setName = (e) => {
+        let newName = e.target.value
+        let player = {...this.props.player}
+        player.name = newName
+        this.props.connection.sendSetPlayer(player)
+    }
+
     render() {
         return (
             <Container className={"Chat"}>
@@ -48,7 +59,7 @@ class Chat extends Component {
                             <Form.Label column>Chat Name</Form.Label>
                             <Col xs="auto">
                                 <Form.Control type={"input"} placeholder={"chat name"} value={this.props.name}
-                                              onChange={this.props.setName}/>
+                                              onChange={this.setName}/>
                             </Col>
                         </Form.Group>
                     </Form>
@@ -60,4 +71,4 @@ class Chat extends Component {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Chat)
+export default connect(mapStateToProps, null)(Chat)

@@ -5,10 +5,10 @@
   "connection": "",
   "gameId": -1,
   "player": {
-    "playerId": -1,
-    "groupId": -1,
+    "playerId": 0,
+    "groupId": 0,
     "name": ""
   },
   "nrGroups": 2,
-  "playersPerGroup": []
+  "players": []
 }

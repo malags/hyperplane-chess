@@ -14,13 +14,12 @@
  * action types
  */
 export const CHAT_SET_NAME = "CHAT_SET_NAME"
-export const SET_PLAYER_ID = "SET_PLAYER_ID"
-export const SET_GROUP_ID = "SET_GROUP_ID"
+export const SET_PLAYER = "SET_PLAYER"
+export const NEW_PLAYER = "NEW_PLAYER"
 export const CHAT_GOT = "CHAT_GOT"
 export const CHAT_SEND = "CHAT_SEND"
 export const SET_CONNECTION = "SET_CONNECTION"
 export const SET_GAME_ID = "SET_GAME_ID"
-export const SET_PLAYERS_PER_GROUP = "SET_PLAYERS_PER_GROUP"
 export const PLAYER_READY = "PLAYER_READY"
 
 
@@ -33,12 +32,12 @@ export function setNameAction(name) {
 
 }
 
-export function setPlayerIdAction(playerId) {
-    return {type: SET_PLAYER_ID, playerId}
+export function setPlayerAction(player) {
+    return {type: SET_PLAYER, player}
 }
 
-export function setGroupIdAction(groupId) {
-    return {type: SET_GROUP_ID, groupId}
+export function newPlayerAction(player) {
+    return {type: NEW_PLAYER, player}
 }
 
 export function setConnectionAction(connection) {
@@ -52,14 +51,6 @@ export function setGameIdAction(gameId) {
 
 export function gotMessageAction(message) {
     return {type: CHAT_GOT, message}
-}
-
-export function sendMessageAction(message) {
-    return {type: CHAT_SEND, message}
-}
-
-export function setPlayersPerGroupAction(playersPerGroup) {
-    return {type: SET_PLAYERS_PER_GROUP, playersPerGroup}
 }
 
 export function playerReadyAction(readyState) {

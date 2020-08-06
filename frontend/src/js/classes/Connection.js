@@ -10,7 +10,11 @@
  */
 
 import store from "../redux/Store"
-import {gotMessageAction, playerReadyAction, setGroupIdAction, setPlayerIdAction} from "../redux/actions";
+import {
+    gotMessageAction, newPlayerAction,
+    playerReadyAction,
+    setPlayerAction
+} from "../redux/actions";
 
 /**
  * Connection to the server with websocket
@@ -45,7 +49,7 @@ class Connection {
     messageHandler(message) {
         let json = JSON.parse(message.data)
         // submitMove / availableMoves / gameStatus
-        if (json.status) {
+        if (json.status === "ok") {
             let command = json.command
             this.gameHandler(command, json)
             this.chatHandler(command, json)
@@ -83,12 +87,12 @@ class Connection {
             case "ready":
                 store.dispatch(playerReadyAction(json.data))
                 break
-            case "setGroupId":
-                store.dispatch(setGroupIdAction(json.data)) //TODO check
+            case "setPlayer":
+                store.dispatch(setPlayerAction(json.data))
                 break
-            case "setPlayerId":
-                store.dispatch(setPlayerIdAction(json.data)) //TODO check
-                break
+            case "newPlayer":
+                store.dispatch(newPlayerAction(json.data))
+                store.dispatch(setPlayerAction(json.data))
             default:
 
         }
@@ -135,6 +139,18 @@ class Connection {
 
     sendSetReady(name, isReady) {
         this._send({command: "ready", data: {name, ready: isReady}})
+    }
+
+    sendNewPlayerRequest() {
+        this._send({command: "newPlayer"})
+    }
+
+    sendSetPlayer(player) {
+        this._send({command: "setPlayer", data: player})
+    }
+
+    sendGetAllPlayers() {
+        this._send({command: "getAllPlayers"})
     }
 
     _send(message) {

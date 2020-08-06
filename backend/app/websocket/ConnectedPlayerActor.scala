@@ -16,8 +16,9 @@ import game.components.Facing
 import game.components.{Piece, Player, Point3D, Type}
 import play.api.Logger
 import play.api.libs.json.{JsError, JsNull, JsPath, JsSuccess, JsValue, Json, Reads, Writes}
-import services.GameService
-import websocket.MatchManager.{ChatMessage, Moved, Ready}
+import services.GameBuilderService.GameBuilder
+import services.{GameBuilderService, GameService}
+import websocket.MatchManager.{ChatMessage, Moved, Ready, SetPlayer}
 
 /**
  * Actor containing information on the GameId
@@ -59,6 +60,7 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
     case Moved(id, move) => gameStatusAction()
     case ChatMessage(id, message) => out ! message
     case Ready(id, client, request) => ???
+    case SetPlayer(id, response) => out ! response
 
     //TODO: add changes to builder and build on ready
 
@@ -74,19 +76,66 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
         case "submitMove" => submitMoveAction(value)
         case "getGameStatus" => gameStatusAction()
         case "ready" => setReady(value)
-        case _ => logger.warn("unhandled message")
+        case "setPlayer" => setPlayer(value)
+        case "newPlayer" => newPlayer()
+        case "getAllPlayers" => getAllPlayers()
+        case unhandled => logger.warn(s"unhandled message $unhandled")
       }
 
     case default: Any => logger.error(s"unhandled in Receive $default")
   }
 
-  def setReady(request: JsValue) = {
+  private def getAllPlayers(): Unit = {
+    GameBuilderService.getAllPlayers(id).foreach(
+      player => success(
+        command = "setPlayer",
+        data = Json.toJson(player)
+      )
+    )
+  }
+
+  private def setReady(request: JsValue): Unit = {
     manager ! MatchManager.Ready(id, self, request)
   }
 
-  def sendMessage(request: JsValue): Unit = {
+  private def setPlayer(request: JsValue): Unit = {
+    val data = (request \ "data").get
+    Json.fromJson[Player](data) match {
+      case JsSuccess(player, _) => {
+        GameBuilderService.setPlayer(id, player)
+        val response: JsValue = Json.obj(
+          "status" -> "ok",
+          "command" -> "setPlayer",
+          "data" -> data
+        )
+        manager ! MatchManager.SetPlayer(id, response)
+      }
+      case JsError(_) => failed("setPlayer")
+    }
+  }
+
+  private def sendMessage(request: JsValue): Unit = {
     logger.info("sendMessage")
     manager ! MatchManager.ChatMessage(id, request)
+  }
+
+  private def newPlayer(): Unit = {
+    val player = GameBuilderService.newPlayer(id)
+    if (player.nonEmpty) {
+      success(
+        command = "newPlayer",
+        data = Json.toJson(player.get)
+      )
+      manager ! MatchManager.SetPlayer(id, Json.obj(
+        "status" -> "ok",
+        "command" -> "setPlayer",
+        "data" -> player.get
+      ))
+    }
+    else out ! Json.obj(
+      "status" -> "failed",
+      "command" -> "newPlayer"
+    )
   }
 
   /**
@@ -127,14 +176,11 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
     (playerResult, from) match {
       case (JsSuccess(player, _), JsSuccess(pos, _)) =>
         val result = GameService.getAvailableMoves(id, pos, player)
-
-        out ! Json.obj(
-          "status" -> "ok",
-          "command" -> "availableMoves",
-          "data" -> result
+        success(
+          command = "availableMoves",
+          data = Json.toJson(result)
         )
-
-      case _ => failed()
+      case _ => failed("availableMoves")
     }
   }
 
@@ -146,17 +192,14 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
 
     optionPieces match {
       case Some(pieces) =>
-
-        out ! Json.obj(
-          "status" -> "ok",
-          "command" -> "gameStatus",
-          "data" -> Json.obj(
+        success(
+          command = "gameStatus",
+          data = Json.obj(
             "nrPlanes" -> GameService.getNrPlanes(id).get, // has some value because Some(pieces)
             "boardSize" -> GameService.getBoardSize(id).get, // has some value because Some(pieces)
             "pieces" -> pieces
           )
         )
-
       case None => failed()
     }
 
@@ -174,6 +217,17 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
    */
   private def failed(): Unit = out ! Json.obj("status" -> "failed")
 
+  /**
+   * send a Failed notification to websocket with given command
+   *
+   * @param command
+   */
+  private def failed(command: String): Unit = out ! Json.obj("status" -> "failed", "command" -> command)
+
+  private def success(command: String, data: JsValue): Unit = out ! Json.obj(
+    "status" -> "ok",
+    "command" -> command,
+    "data" -> data)
 }
 
 object ConnectedPlayerActor {

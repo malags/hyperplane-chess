@@ -13,6 +13,7 @@ package services
 
 import scala.collection.JavaConverters._
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 
 import game.components.Player
 import play.api.Logger
@@ -50,6 +51,12 @@ object GameBuilderService {
   def setGroupForPlayer(id: Long, playerId: Int, groupId: Int, name: String): Unit = mapIdToGameBuilder.apply(id)
     .setGroupForPlayer(playerId, groupId, name)
 
+  def setPlayer(id: Long, player: Player): Unit = mapIdToGameBuilder.apply(id).setPlayer(player)
+
+  def newPlayer(id: Long): Option[Player] = mapIdToGameBuilder.apply(id).newPlayer()
+
+  def getAllPlayers(id: Long) = mapIdToGameBuilder.apply(id).players.filter(player => player != null)
+
   def build(id: Long) = {
     logger.info(s"build $id")
     mapIdToGameBuilder.apply(id).build()
@@ -60,12 +67,36 @@ object GameBuilderService {
 
   case class GameBuilder(nrPlanes: Int, nrPlayers: Int, boardSize: Int, movementFile: JsValue, piecesPosition: List[String], id: Long) {
     val logger = Logger(this.getClass)
-    var players: Array[Player] = Array.ofDim[Player](nrPlayers)
+    val players: Array[Player] = Array.ofDim[Player](nrPlayers)
+
+    var playerIdCounter: AtomicInteger = new AtomicInteger(0)
 
     def setGroupForPlayer(playerId: Int, groupId: Int, name: String): Unit = {
       logger.info(s"setGroupForPlayer playerId=$playerId groupId=$groupId")
       val player: Player = Player(playerId, groupId, name)
       players(playerId) = player
+    }
+
+    def setPlayer(player: Player): Unit = players(player.playerId) = player
+
+    /**
+     * Create a new player for the game being built
+     *
+     * @return the created Player
+     */
+    def newPlayer(): Option[Player] = {
+      logger.info("created new player")
+      if (playerIdCounter.get() == players.length)
+        None
+      else {
+        val player: Option[Player] = Some(Player(
+          playerId = playerIdCounter.getAndIncrement(),
+          groupId = 0,
+          name = ""
+        ))
+        setPlayer(player.get)
+        player
+      }
     }
 
     /**

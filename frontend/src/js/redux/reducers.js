@@ -17,7 +17,7 @@ import {
     SET_CONNECTION,
     SET_GAME_ID,
     PLAYER_READY,
-    SET_PLAYERS_PER_GROUP, SET_GROUP_ID, SET_PLAYER_ID
+    SET_PLAYER, NEW_PLAYER
 } from "./actions";
 
 const initialState = require("./initialState.json")
@@ -31,6 +31,27 @@ const gotMessage = (state, action) => {
         messages: tempMessages.length >= state.break_size ?
             tempMessages.slice(state.break_size / 2) :
             tempMessages
+    }
+}
+
+const setPlayer = (state, action) => {
+    let player = action.player
+    let players = state.players.filter(p => p.playerId != action.player.playerId)
+    players.push(action.player)
+    // changed player is user
+    if (player.playerId == state.player.playerId) {
+        return {
+            ...state,
+            player: action.player,
+            players: players
+        }
+    }
+    // changed player is another user
+    else {
+        return {
+            ...state,
+            players: players
+        }
     }
 }
 
@@ -49,22 +70,8 @@ function reducer(state = initialState, action) {
                     name: action.name,
                 }
             }
-        case SET_GROUP_ID:
-            return {
-                ...state,
-                player: {
-                    ...state.player,
-                    groupId: action.groupId
-                }
-            }
-        case SET_PLAYER_ID:
-            return {
-                ...state,
-                player: {
-                    ...state.player,
-                    playerId: action.playerId
-                }
-            }
+        case SET_PLAYER:
+            return setPlayer(state, action)
         case SET_CONNECTION:
             return {
                 ...state,
@@ -83,10 +90,10 @@ function reducer(state = initialState, action) {
                 ...state,
 
             }
-        case SET_PLAYERS_PER_GROUP:
+        case NEW_PLAYER:
             return {
                 ...state,
-                playersPerGroup: action.playersPerGroup
+                player: action.player
             }
         default:
             return {...state}
