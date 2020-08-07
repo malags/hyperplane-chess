@@ -11,6 +11,7 @@
 
 import store from "../redux/Store"
 import {
+    getAllReadyStatusAction,
     gotMessageAction, newPlayerAction,
     playerReadyAction,
     setPlayerAction
@@ -84,15 +85,14 @@ class Connection {
 
     gameConfigHandler(command, json) {
         switch (command) {
-            case "ready":
-                store.dispatch(playerReadyAction(json.data))
-                break
             case "setPlayer":
                 store.dispatch(setPlayerAction(json.data))
                 break
             case "newPlayer":
                 store.dispatch(newPlayerAction(json.data))
                 store.dispatch(setPlayerAction(json.data))
+            case "getAllReadyStatus":
+                store.dispatch(getAllReadyStatusAction(json.data))
             default:
 
         }
@@ -151,6 +151,10 @@ class Connection {
 
     sendGetAllPlayers() {
         this._send({command: "getAllPlayers"})
+    }
+
+    sendGetAllReadyStatus() {
+        this._send({command: "getAllReadyStatus"})
     }
 
     _send(message) {

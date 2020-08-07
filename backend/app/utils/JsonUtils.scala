@@ -9,50 +9,28 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+package utils
 
-/*
- * action types
+import game.components.{Facing, Piece, Player, Point3D, Type}
+import play.api.libs.json.{Json, Reads, Writes}
+
+/**
+ * Object containing Readers and Writers for the Game classes to allow conversion between Json and the specific class
+ * use import utils.JsonUtils._
  */
-export const CHAT_SET_NAME = "CHAT_SET_NAME"
-export const SET_PLAYER = "SET_PLAYER"
-export const NEW_PLAYER = "NEW_PLAYER"
-export const CHAT_GOT = "CHAT_GOT"
-export const CHAT_SEND = "CHAT_SEND"
-export const SET_CONNECTION = "SET_CONNECTION"
-export const SET_GAME_ID = "SET_GAME_ID"
-export const GET_READY_STATUS = "GET_READY_STATUS"
+object JsonUtils {
+  implicit val playerReads: Reads[Player] = Json.reads[Player]
+  implicit val playerWrites: Writes[Player] = Json.writes[Player]
 
+  implicit val point3DReads: Reads[Point3D] = Json.reads[Point3D]
+  implicit val point3DWrites: Writes[Point3D] = Json.writes[Point3D]
 
-/*
- * action creators
- */
+  implicit val typeReads: Reads[Type] = Json.reads[Type]
+  implicit val typeWrites: Writes[Type] = Json.writes[Type]
 
-export function setNameAction(name) {
-    return {type: CHAT_SET_NAME, name}
+  implicit val facingReads: Reads[Facing.Value] = Reads.enumNameReads(Facing)
+  implicit val facingWrites: Writes[Facing.Value] = Writes.enumNameWrites
 
-}
-
-export function setPlayerAction(player) {
-    return {type: SET_PLAYER, player}
-}
-
-export function newPlayerAction(player) {
-    return {type: NEW_PLAYER, player}
-}
-
-export function setConnectionAction(connection) {
-    return {type: SET_CONNECTION, connection}
-
-}
-
-export function setGameIdAction(gameId) {
-    return {type: SET_GAME_ID, gameId}
-}
-
-export function gotMessageAction(message) {
-    return {type: CHAT_GOT, message}
-}
-
-export function getAllReadyStatusAction(playersReady) {
-    return{type: GET_READY_STATUS, playersReady}
+  implicit val pieceReads: Reads[Piece] = Json.reads[Piece]
+  implicit val pieceWrites: Writes[Piece] = Json.writes[Piece]
 }

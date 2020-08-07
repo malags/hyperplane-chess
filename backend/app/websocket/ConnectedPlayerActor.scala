@@ -12,11 +12,10 @@
 package websocket
 
 import akka.actor.{Actor, ActorRef, Props}
-import game.components.Facing
-import game.components.{Piece, Player, Point3D, Type}
+import utils.JsonUtils._
+import game.components.{Player, Point3D}
 import play.api.Logger
-import play.api.libs.json.{JsError, JsNull, JsPath, JsSuccess, JsValue, Json, Reads, Writes}
-import services.GameBuilderService.GameBuilder
+import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import services.{GameBuilderService, GameService}
 import websocket.MatchManager.{ChatMessage, Moved, Ready, SetPlayer}
 
@@ -30,21 +29,6 @@ import websocket.MatchManager.{ChatMessage, Moved, Ready, SetPlayer}
  */
 class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends Actor {
 
-  private implicit val playerReads: Reads[Player] = Json.reads[Player]
-  private implicit val playerWrites: Writes[Player] = Json.writes[Player]
-
-  private implicit val point3DReads: Reads[Point3D] = Json.reads[Point3D]
-  private implicit val point3DWrites: Writes[Point3D] = Json.writes[Point3D]
-
-  private implicit val typeReads: Reads[Type] = Json.reads[Type]
-  private implicit val typeWrites: Writes[Type] = Json.writes[Type]
-
-  private implicit val facingReads: Reads[Facing.Value] = Reads.enumNameReads(Facing)
-  private implicit val facingWrites: Writes[Facing.Value] = Writes.enumNameWrites
-
-  private implicit val pieceReads: Reads[Piece] = Json.reads[Piece]
-  private implicit val pieceWrites: Writes[Piece] = Json.writes[Piece]
-
   val logger: Logger = Logger(this.getClass)
   // inform manager of new actor
   logger.info(s"new client with gameId=$id  $self")
@@ -57,12 +41,12 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
    * @return
    */
   override def receive: Receive = {
-    case Moved(id, move) => gameStatusAction()
-    case ChatMessage(id, message) => out ! message
-    case Ready(id, client, request) => ???
-    case SetPlayer(id, response) => out ! response
+    case Moved(_, _) => gameStatusAction()
+    case ChatMessage(_, message) => out ! message
+    case Ready(_, message) => out ! message
+    case SetPlayer(_, response) => out ! response
 
-    //TODO: add changes to builder and build on ready
+    //TODO: build on ready
 
     // initial case
     case value: JsValue =>
@@ -79,10 +63,19 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
         case "setPlayer" => setPlayer(value)
         case "newPlayer" => newPlayer()
         case "getAllPlayers" => getAllPlayers()
+        case "getAllReadyStatus" => out ! getAllReadyStatusJsValue()
         case unhandled => logger.warn(s"unhandled message $unhandled")
       }
 
     case default: Any => logger.error(s"unhandled in Receive $default")
+  }
+
+  private def getAllReadyStatusJsValue(): JsValue = {
+    Json.obj(
+      "status" -> "ok",
+      "command" -> "getAllReadyStatus",
+      "data" -> GameBuilderService.getAllReadyStatus(id)
+    )
   }
 
   private def getAllPlayers(): Unit = {
@@ -95,7 +88,17 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
   }
 
   private def setReady(request: JsValue): Unit = {
-    manager ! MatchManager.Ready(id, self, request)
+    (
+      Json.fromJson[Player]((request \ "data" \ "player").get),
+      Json.fromJson[Boolean]((request \ "data" \ "ready").get)
+    ) match {
+      case (JsSuccess(player, _), JsSuccess(ready, _)) => {
+        GameBuilderService.setReady(id, player, ready)
+        val response: JsValue = getAllReadyStatusJsValue()
+        manager ! MatchManager.Ready(id, response)
+      }
+      case _ => failed("setReady")
+    }
   }
 
   private def setPlayer(request: JsValue): Unit = {
@@ -117,6 +120,15 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
   private def sendMessage(request: JsValue): Unit = {
     logger.info("sendMessage")
     manager ! MatchManager.ChatMessage(id, request)
+  }
+
+  private def sendReady(player: Player, ready: Boolean): Unit = {
+    success(
+      command = "setReady",
+      data = Json.obj(
+        "player" -> player,
+        "ready" -> ready
+      ))
   }
 
   private def newPlayer(): Unit = {

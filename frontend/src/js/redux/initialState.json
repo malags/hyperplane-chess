@@ -10,5 +10,6 @@
     "name": ""
   },
   "nrGroups": 2,
-  "players": []
+  "players": [],
+  "playersReady": []
 }

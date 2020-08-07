@@ -57,6 +57,12 @@ object GameBuilderService {
 
   def getAllPlayers(id: Long) = mapIdToGameBuilder.apply(id).players.filter(player => player != null)
 
+  def setReady(id: Long, player: Player, readyStatus: Boolean): Unit = mapIdToGameBuilder.apply(id)
+    .setReady(player, readyStatus)
+
+  def getAllReadyStatus(id: Long): Array[Boolean] = mapIdToGameBuilder.apply(id).ready
+
+
   def build(id: Long) = {
     logger.info(s"build $id")
     mapIdToGameBuilder.apply(id).build()
@@ -68,6 +74,7 @@ object GameBuilderService {
   case class GameBuilder(nrPlanes: Int, nrPlayers: Int, boardSize: Int, movementFile: JsValue, piecesPosition: List[String], id: Long) {
     val logger = Logger(this.getClass)
     val players: Array[Player] = Array.ofDim[Player](nrPlayers)
+    val ready: Array[Boolean] = Array.ofDim[Boolean](nrPlayers)
 
     var playerIdCounter: AtomicInteger = new AtomicInteger(0)
 
@@ -78,6 +85,8 @@ object GameBuilderService {
     }
 
     def setPlayer(player: Player): Unit = players(player.playerId) = player
+
+    def setReady(player: Player, readyStatus: Boolean): Unit = ready(player.playerId) = readyStatus
 
     /**
      * Create a new player for the game being built

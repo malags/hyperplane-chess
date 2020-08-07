@@ -12,9 +12,10 @@
 package websocket
 
 import akka.actor.{Actor, ActorRef}
+import game.components.Player
 import play.api.Logger
 import play.api.libs.json.{JsObject, JsValue, Json}
-import services.GameService
+import utils.JsonUtils._
 import websocket.MatchManager.{ChatMessage, Moved, NewClient, Ready, Remove, SetPlayer}
 
 /**
@@ -50,13 +51,10 @@ class MatchManager extends Actor {
       //      }
     }
 
-    case Ready(id: Long, client: ActorRef, request: JsValue) => {
-      //TODO add rest of logic
-      val response: JsObject = addStatusOk(request)
-      // set player ready in builder
-      // set ready in clients
-      participants.apply(id).foreach(_ ! response)
-      // if can build, do so and inform clients
+    case ready@Ready(id: Long, _) => {
+      // inform clients
+      participants.apply(id).foreach(_ ! ready)
+      // if can build, do so (maybe)
     }
 
     case setPlayer@SetPlayer(id: Long, _) => participants.apply(id).foreach(_ ! setPlayer)
@@ -75,7 +73,7 @@ object MatchManager {
 
   case class ChatMessage(id: Long, message: JsValue)
 
-  case class Ready(id: Long, client: ActorRef, request: JsValue)
+  case class Ready(id: Long, message: JsValue)
 
   case class SetPlayer(id: Long, request: JsValue)
 

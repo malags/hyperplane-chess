@@ -22,7 +22,8 @@ const mapStateToProps = (state) => {
         connection: state.connection,
         players: state.players,
         name: state.player.name,
-        player: state.player
+        player: state.player,
+        playersReady: state.playersReady
     }
 }
 
@@ -34,6 +35,7 @@ class GroupSelector extends Component {
                 "open", () => {
                     this.props.connection.sendNewPlayerRequest()
                     this.props.connection.sendGetAllPlayers()
+                    this.props.connection.sendGetAllReadyStatus()
                 })
         }, 0)
     }
@@ -52,13 +54,20 @@ class GroupSelector extends Component {
 
     _player = (groupId) => {
         let players = this.props.players
+        let ready = this.props.playersReady
         console.log(players)
         if (players === undefined || players.length === 0) return
         else return (
             <Col key={groupId}>{
                 players
                     .filter(p => p.groupId === groupId)
-                    .map(player => <p key={player.name}>{player.name}</p>)}
+                    .map((player, index) => {
+                        let color = ready[index] ? "green" : "red"
+                        let readyText = ready[index] ? "✓" : "✗"
+                        return <div><span key={player.name}>{player.name}</span><span key={player.name + "_ready"}
+                                                                             style={{"color" : color}}
+                        >{"\t\t"+readyText}</span></div>
+                    })}
             </Col>)
     }
 

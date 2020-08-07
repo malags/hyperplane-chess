@@ -16,8 +16,9 @@ import {
     CHAT_GOT,
     SET_CONNECTION,
     SET_GAME_ID,
-    PLAYER_READY,
-    SET_PLAYER, NEW_PLAYER
+    SET_PLAYER,
+    NEW_PLAYER,
+    GET_READY_STATUS
 } from "./actions";
 
 const initialState = require("./initialState.json")
@@ -85,10 +86,11 @@ function reducer(state = initialState, action) {
                     gameId: action.gameId,
                 }
             }
-        case PLAYER_READY:
+        case GET_READY_STATUS:
+            console.log(action)
             return {
                 ...state,
-
+                playersReady: action.playersReady
             }
         case NEW_PLAYER:
             return {
