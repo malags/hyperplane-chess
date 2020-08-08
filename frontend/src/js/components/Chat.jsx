@@ -33,13 +33,6 @@ function mapStateToProps(state) {
     }
 }
 
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        setName: (control) => _setName(dispatch, control)
-    }
-}
-
 class Chat extends Component {
 
     setName = (e) => {
@@ -78,4 +71,4 @@ class Chat extends Component {
     }
 }
 
-export default connect(mapStateToProps, null)(Chat)
+export default connect(mapStateToProps)(Chat)
