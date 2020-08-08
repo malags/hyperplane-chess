@@ -18,6 +18,7 @@ import Chat from "../Chat.jsx"
 import Connection from "../../classes/Connection";
 import {setConnectionAction, setGameIdAction} from "../../redux/actions";
 import {connect} from 'react-redux'
+import GameReady from "./GameReady.jsx";
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -46,6 +47,11 @@ class GameConfiguration extends Component {
                     </Col>
                     <Col>
                         <Chat/>
+                    </Col>
+                </Row>
+                <Row className={"mt-4"}>
+                    <Col>
+                        <GameReady/>
                     </Col>
                 </Row>
             </Container>

@@ -1,5 +1,4 @@
 {
-  "name": "",
   "messages": [],
   "break_size": 256,
   "connection": "",
@@ -7,7 +6,7 @@
   "player": {
     "playerId": 0,
     "groupId": 0,
-    "name": ""
+    "name": "user"
   },
   "nrGroups": 2,
   "players": [],

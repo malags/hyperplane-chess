@@ -13,7 +13,6 @@ import store from "../redux/Store"
 import {
     getAllReadyStatusAction,
     gotMessageAction, newPlayerAction,
-    playerReadyAction,
     setPlayerAction
 } from "../redux/actions";
 
@@ -61,6 +60,7 @@ class Connection {
     gameHandler(command, json) {
         switch (command) {
             case "submitMove": // received move done
+                console.log("TODO Connection/gameHandler")
                 console.log(json) //TODO actual action
                 break
             case "availableMoves":  // requested moves for some position
@@ -76,8 +76,6 @@ class Connection {
     chatHandler(command, json) {
         switch (command) {
             case "message":
-                console.log(json)
-                console.log(gotMessageAction(json.data))
                 store.dispatch(gotMessageAction(json.data))
             default:
         }
@@ -133,12 +131,11 @@ class Connection {
     }
 
     sendMessage(message) {
-        console.log("sending message")
         this._send({command: "message", data: message})
     }
 
-    sendSetReady(name, isReady) {
-        this._send({command: "ready", data: {name, ready: isReady}})
+    sendSetReady(player, isReady) {
+        this._send({command: "ready", data: {player, ready: isReady}})
     }
 
     sendNewPlayerRequest() {

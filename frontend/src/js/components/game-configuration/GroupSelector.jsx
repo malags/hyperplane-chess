@@ -110,11 +110,14 @@ class GroupSelector extends Component {
         return (
             <Container className={"mx-auto"}>
                 <Row><h1>Group Selector</h1></Row>
-                <Col>
+                <Col sm>
                     <Row>
                         {this._groups()}
                     </Row>
-                    <Row>
+                    <Row style={{
+                        "max-height": window.screen.height * 0.5,
+                        "min-height": window.screen.height * 0.5
+                    }}>
                         {this._players()}
                     </Row>
                     <Row>

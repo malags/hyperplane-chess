@@ -25,7 +25,6 @@ const initialState = require("./initialState.json")
 
 
 const gotMessage = (state, action) => {
-    console.log("got message")
     let tempMessages = [...state.messages, action.message]
     return {
         ...state,
@@ -87,7 +86,6 @@ function reducer(state = initialState, action) {
                 }
             }
         case GET_READY_STATUS:
-            console.log(action)
             return {
                 ...state,
                 playersReady: action.playersReady

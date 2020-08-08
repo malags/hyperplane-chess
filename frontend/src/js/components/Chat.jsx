@@ -52,20 +52,27 @@ class Chat extends Component {
     render() {
         return (
             <Container className={"Chat"}>
-                <Col>
-                    <h1>Chat</h1>
-                    <Form inline>
-                        <Form.Group as={Row}>
-                            <Form.Label column>Chat Name</Form.Label>
-                            <Col xs="auto">
+                <Row>
+                    <Col>
+                        <h1>Chat</h1>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <Form inline>
+                            <Form.Group as={Row}>
+                                <Form.Label column>Chat Name</Form.Label>
                                 <Form.Control type={"input"} placeholder={"chat name"} value={this.props.name}
                                               onChange={this.setName}/>
-                            </Col>
-                        </Form.Group>
-                    </Form>
-
-                    <ChatMessages/>
-                </Col>
+                            </Form.Group>
+                        </Form>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <ChatMessages/>
+                    </Col>
+                </Row>
             </Container>
         );
     }

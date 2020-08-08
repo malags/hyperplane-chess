@@ -14,7 +14,8 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import {connect} from 'react-redux'
-import {gotMessageAction} from "../redux/actions";
+import ListGroup from "react-bootstrap/ListGroup";
+import Container from "react-bootstrap/Container";
 
 const mapStateToProps = (state) => {
     return {
@@ -22,12 +23,6 @@ const mapStateToProps = (state) => {
         messages: state.messages,
         break_size: state.break_size,
         connection: state.connection
-    }
-}
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        gotMessage: (message) => dispatch(gotMessageAction(message))
     }
 }
 
@@ -68,22 +63,39 @@ class ChatMessages extends Component {
 
     render() {
         return (
-            <Col>{
-                this.props.messages.map(message =>
-                    <Row key={message.id}>{message.sender + ": " + message.content}</Row>
-                )
-            }
+            <Container>
                 <Row>
-                    <input type={"text"} value={this.state.draftMessage} onChange={this.messageChange}
-                           onKeyPress={this.handleKeys}/><Button
-                    onClick={this.sendMessage}>Send</Button>
+                    <Col>
+                        <ListGroup style={{
+                            "max-height": window.screen.height * 0.5,
+                            "min-height": window.screen.height * 0.5,
+                            "margin-bottom": "10px",
+                            "margin-top": "10px",
+                            "overflow": "scroll",
+                            "-webkit-overflow-scrolling": "touch"
+                        }}>
+                            {this.props.messages.map(message =>
+                                <ListGroup.Item variant="dark"
+                                                key={message.id}>{message.sender + ": " + message.content}</ListGroup.Item>
+                            )}
+                        </ListGroup>
+                    </Col>
                 </Row>
-            </Col>
+                <Row>
+                    <Col>
+                        <Row>
+                            <input type={"text"} value={this.state.draftMessage} onChange={this.messageChange}
+                                   onKeyPress={this.handleKeys}/><Button
+                            onClick={this.sendMessage}>Send</Button>
+                        </Row>
+                    </Col>
+                </Row>
+            </Container>
         );
     }
 
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(ChatMessages)
+export default connect(mapStateToProps)(ChatMessages)
 
