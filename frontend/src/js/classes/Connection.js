@@ -15,11 +15,13 @@ import {
     gotMessageAction, newPlayerAction,
     setPlayerAction
 } from "../redux/actions";
+import React from "react";
 
 /**
  * Connection to the server with websocket
  */
 class Connection {
+
     constructor(socket_url) {
         this.socket = new WebSocket(socket_url)
         this.socket.onopen = () => {
@@ -89,8 +91,13 @@ class Connection {
             case "newPlayer":
                 store.dispatch(newPlayerAction(json.data))
                 store.dispatch(setPlayerAction(json.data))
+                break
             case "getAllReadyStatus":
                 store.dispatch(getAllReadyStatusAction(json.data))
+                break
+            case "gameStart":
+                window.location.pathname = "game"
+                break
             default:
 
         }

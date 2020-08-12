@@ -15,45 +15,28 @@ import ReactDOM from "react-dom";
 
 import Game from "./Game.jsx";
 import NewGameForm from "./NewGameForm.jsx";
-import {BrowserRouter, Route} from "react-router-dom";
+import {BrowserRouter as Router, Route} from "react-router-dom";
 import NavBar from "./NavBar.jsx";
 import Home from "./Home.jsx";
 import GameConfiguration from "./game-configuration/GameConfiguration.jsx";
-
+import {render} from 'react-dom';
 
 import store from "../redux/Store";
 
 
-class App extends Component {
-    constructor(props) {
-        super(props);
-    }
+const App = () => (
+    <Provider store={store}>
+        <Router>
+            <div className="App">
+                <NavBar/>
+                <Route exact path="/" component={Home}/>
+                <Route path={"/game"} component={Game}/>
+                <Route path={"/new-game"} component={NewGameForm}/>
+                <Route path={"/connect/:gameId"} component={GameConfiguration}/>
+            </div>
+        </Router>
+    </Provider>
+)
 
-    render() {
-        return (
-            <Provider store={store}>
-                <BrowserRouter>
-                    <div className="App">
-                        <NavBar/>
-                        <Route exact path="/" component={Home}/>
-                        <Route path={"/game"} render={(props) => (<Game {...props}
-                                                                        socket_url={window.location.href.replace("http", "ws") + "socket?id=" + 0}/>)}/>
-                        <Route path={"/new-game"} component={NewGameForm}/>
-                        <Route path={"/connect/:gameId"} component={GameConfiguration}/>
-                        <link
-                            rel="stylesheet"
-                            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-                            integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
-                            crossOrigin="anonymous"
-                        />
-                    </div>
-                </BrowserRouter>
-            </Provider>
-        )
-    }
-}
 
-export default App;
-
-const wrapper = document.getElementById("app");
-wrapper ? ReactDOM.render(<App/>, wrapper) : false;
+render(<App/>, document.getElementById('root'));

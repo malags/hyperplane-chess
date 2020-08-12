@@ -80,10 +80,7 @@ function reducer(state = initialState, action) {
         case SET_GAME_ID:
             return {
                 ...state,
-                player: {
-                    ...state.player,
-                    gameId: action.gameId,
-                }
+                gameId: action.gameId
             }
         case GET_READY_STATUS:
             return {

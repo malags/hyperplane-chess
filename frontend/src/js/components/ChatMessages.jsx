@@ -67,12 +67,12 @@ class ChatMessages extends Component {
                 <Row>
                     <Col>
                         <ListGroup style={{
-                            "max-height": window.screen.height * 0.5,
-                            "min-height": window.screen.height * 0.5,
-                            "margin-bottom": "10px",
-                            "margin-top": "10px",
+                            "maxHeight": window.screen.height * 0.5,
+                            "minHeight": window.screen.height * 0.5,
+                            "marginBottom": "10px",
+                            "marginTop": "10px",
                             "overflow": "scroll",
-                            "-webkit-overflow-scrolling": "touch"
+                            "WebkitOverflowScrolling": "touch"
                         }}>
                             {this.props.messages.map(message =>
                                 <ListGroup.Item variant="dark"

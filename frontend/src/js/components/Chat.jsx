@@ -16,14 +16,9 @@ import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import {connect} from 'react-redux'
-import {setNameAction} from "../redux/actions";
+import GameReady from "./game-configuration/GameReady.jsx";
 
 //TODO
-
-const _setName = (dispatch, e) => {
-    let newName = e.target.value
-    if (newName.length < 15) dispatch(setNameAction(newName))
-}
 
 function mapStateToProps(state) {
     return {
@@ -38,8 +33,10 @@ class Chat extends Component {
     setName = (e) => {
         let newName = e.target.value
         let player = {...this.props.player}
+        let connection = this.props.connection
         player.name = newName
-        this.props.connection.sendSetPlayer(player)
+        connection.sendSetPlayer(player)
+        GameReady.setNotReady(connection, player)
     }
 
     render() {

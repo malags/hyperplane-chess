@@ -12,11 +12,10 @@
 package websocket
 
 import akka.actor.{Actor, ActorRef}
-import game.components.Player
 import play.api.Logger
 import play.api.libs.json.{JsObject, JsValue, Json}
-import utils.JsonUtils._
-import websocket.MatchManager.{ChatMessage, Moved, NewClient, Ready, Remove, SetPlayer}
+import services.GameStarterService
+import websocket.MatchManager.{ChatMessage, Moved, NewClient, Ready, Remove, SetPlayer, StartGame}
 
 /**
  * MatchManager manages groups of ConnectedPlayerActors (Matches) and notifies them when
@@ -35,6 +34,7 @@ class MatchManager extends Actor {
     case NewClient(id: Long, client: ActorRef) => {
       val clients = participants.apply(id) + client
       participants = participants + (id -> clients)
+      if (!GameStarterService.exists(id)) GameStarterService.newGamerStarter(id, self)
     }
     case moved@Moved(id: Long, move: JsValue) => {
       logger.info(s"moved $move")
@@ -59,6 +59,8 @@ class MatchManager extends Actor {
 
     case setPlayer@SetPlayer(id: Long, _) => participants.apply(id).foreach(_ ! setPlayer)
 
+    case startGame@StartGame(id: Long) => participants.apply(id).foreach(_ ! startGame)
+
     case default => logger.error(s"unhandled in Receive $default")
   }
 }
@@ -76,6 +78,8 @@ object MatchManager {
   case class Ready(id: Long, message: JsValue)
 
   case class SetPlayer(id: Long, request: JsValue)
+
+  case class StartGame(id: Long)
 
 }
 

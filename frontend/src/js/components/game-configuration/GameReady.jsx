@@ -18,20 +18,32 @@ import Container from "react-bootstrap/Container";
 const mapStateToProps = (state) => {
     return {
         player: state.player,
-        connection: state.connection
+        playerId: state.player.playerId,
+        connection: state.connection,
+        playersReady: state.playersReady,
+        players: state.players
     }
 }
 
+/**
+ * Component containing the Button to toggle the ready state of the player, also contains setNotReady() to force ready=false
+ */
 class GameReady extends Component {
-    state = {
-        ready: false
+
+    /**
+     * Set Player as not Ready
+     * @param connection
+     * @param player
+     */
+    static setNotReady = (connection, player) => {
+        connection.sendSetReady(player, false)
     }
 
-    setReady = () => {
-        let ready = !this.state.ready
-        this.setState({
-            ready: ready
-        })
+    /**
+     * Toggle player's ready state, notify server
+     */
+    toggleReady = () => {
+        let ready = !this.props.playersReady[this.props.playerId]
         this.props.connection.sendSetReady(this.props.player, ready)
     }
 
@@ -39,7 +51,7 @@ class GameReady extends Component {
         return (
             <Container>
                 <Col>
-                    <Button onClick={this.setReady}>Ready</Button>
+                    <Button onClick={this.toggleReady}>Ready</Button>
                 </Col>
 
             </Container>

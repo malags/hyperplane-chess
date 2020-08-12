@@ -15,9 +15,9 @@ import akka.actor.{Actor, ActorRef, Props}
 import utils.JsonUtils._
 import game.components.{Player, Point3D}
 import play.api.Logger
-import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
+import play.api.libs.json.{JsError, JsNull, JsSuccess, JsValue, Json}
 import services.{GameBuilderService, GameService}
-import websocket.MatchManager.{ChatMessage, Moved, Ready, SetPlayer}
+import websocket.MatchManager.{ChatMessage, Moved, Ready, SetPlayer, StartGame}
 
 /**
  * Actor containing information on the GameId
@@ -45,6 +45,7 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
     case ChatMessage(_, message) => out ! message
     case Ready(_, message) => out ! message
     case SetPlayer(_, response) => out ! response
+    case StartGame(_) => success(command = "gameStart", data = JsNull)
 
     //TODO: build on ready
 
@@ -120,15 +121,6 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
   private def sendMessage(request: JsValue): Unit = {
     logger.info("sendMessage")
     manager ! MatchManager.ChatMessage(id, request)
-  }
-
-  private def sendReady(player: Player, ready: Boolean): Unit = {
-    success(
-      command = "setReady",
-      data = Json.obj(
-        "player" -> player,
-        "ready" -> ready
-      ))
   }
 
   private def newPlayer(): Unit = {

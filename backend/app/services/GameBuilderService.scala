@@ -53,6 +53,12 @@ object GameBuilderService {
 
   def setPlayer(id: Long, player: Player): Unit = mapIdToGameBuilder.apply(id).setPlayer(player)
 
+  /**
+   * Create a new player for the given gameId if the game is not full
+   *
+   * @param id gameId
+   * @return Player
+   */
   def newPlayer(id: Long): Option[Player] = mapIdToGameBuilder.apply(id).newPlayer()
 
   def getAllPlayers(id: Long) = mapIdToGameBuilder.apply(id).players.filter(player => player != null)
@@ -86,7 +92,11 @@ object GameBuilderService {
 
     def setPlayer(player: Player): Unit = players(player.playerId) = player
 
-    def setReady(player: Player, readyStatus: Boolean): Unit = ready(player.playerId) = readyStatus
+    def setReady(player: Player, readyStatus: Boolean): Unit = {
+      ready(player.playerId) = readyStatus
+      if (!ready.contains(false)) GameStarterService.startCountDown(id)
+      else GameStarterService.stopCountDown(id)
+    }
 
     /**
      * Create a new player for the game being built

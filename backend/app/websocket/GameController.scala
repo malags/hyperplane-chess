@@ -71,6 +71,7 @@ class GameController @Inject()(cc: ControllerComponents)(implicit system: ActorS
 
           try {
             val mov = jsMovementFile.get
+            // GameBuilder service
             val id: Long = GameBuilderService.newBuilder(
               jsNrPlanes.as[Int],
               jsNrPlayers.as[Int],

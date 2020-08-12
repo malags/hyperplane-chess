@@ -14,6 +14,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
+import GameReady from "./GameReady.jsx";
 import {connect} from 'react-redux'
 
 const mapStateToProps = (state) => {
@@ -46,27 +47,28 @@ class GroupSelector extends Component {
      * @param groupId Id of the group selected
      */
     select = (groupId) => {
-        console.log("join " + groupId)
         let player = {...this.props.player}
+        let connection = this.props.connection
+        GameReady.setNotReady(connection, player)
         player.groupId = groupId
-        this.props.connection.sendSetPlayer(player)
+        connection.sendSetPlayer(player)
     }
 
     _player = (groupId) => {
         let players = this.props.players
         let ready = this.props.playersReady
-        console.log(players)
         if (players === undefined || players.length === 0) return
         else return (
             <Col key={groupId}>{
                 players
                     .filter(p => p.groupId === groupId)
-                    .map((player, index) => {
+                    .map(player => {
+                        let index = player.playerId // ready state is sorted by playerId
                         let color = ready[index] ? "green" : "red"
                         let readyText = ready[index] ? "✓" : "✗"
                         return <div><span key={player.name}>{player.name}</span><span key={player.name + "_ready"}
-                                                                             style={{"color" : color}}
-                        >{"\t\t"+readyText}</span></div>
+                                                                                      style={{"color": color}}
+                        >{"\t\t" + readyText}</span></div>
                     })}
             </Col>)
     }
@@ -115,8 +117,8 @@ class GroupSelector extends Component {
                         {this._groups()}
                     </Row>
                     <Row style={{
-                        "max-height": window.screen.height * 0.5,
-                        "min-height": window.screen.height * 0.5
+                        "maxHeight": window.screen.height * 0.5,
+                        "minHeight": window.screen.height * 0.5
                     }}>
                         {this._players()}
                     </Row>
@@ -129,4 +131,4 @@ class GroupSelector extends Component {
     }
 }
 
-export default connect(mapStateToProps, null)(GroupSelector)
+export default connect(mapStateToProps)(GroupSelector)

@@ -13,22 +13,8 @@ import React, {Component} from "react";
 import * as PIXI from 'pixi.js'
 import Row from "react-bootstrap/Row";
 import Container from "react-bootstrap/Container";
-import {gotMessageAction} from "../redux/actions";
+import {connect} from 'react-redux'
 
-const mapStateToProps = (state) => {
-    return {
-        player: state.player,
-        messages: state.messages,
-        break_size: state.break_size,
-        connection: state.connection
-    }
-}
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        gotMessage: (message) => dispatch(gotMessageAction(message))
-    }
-}
 
 /**
  * enum for drawing order in PixiJS
@@ -40,17 +26,23 @@ const layer = {
     "PIECES": 2
 }
 
-class Game extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            tile_size: 30,
-            selectedPos: null,
-            nrBoards: 0,
-            boardSize: 6,
-            pieces: null
-        }
+const mapStateToProps = (state) => {
+    return {
+        player: state.player,
+        connection: state.connection
     }
+}
+
+class Game extends Component {
+    state = {
+        tile_size: 30,
+        selectedPos: null,
+        nrBoards: 0,
+        boardSize: 6,
+        pieces: null,
+        pixi: null
+    }
+
 
     componentDidMount() {
         let type = "WebGL"
@@ -58,9 +50,6 @@ class Game extends Component {
             type = "canvas"
         }
         PIXI.utils.sayHello(type)
-
-        this.props.connection.setGame(this)
-
 
         let pixi = new PIXI.Application({
             resizeTo: window,
@@ -94,6 +83,12 @@ class Game extends Component {
         this.setState({
             pixi: pixi
         })
+
+        setTimeout(() => {
+            console.log(this.props)
+            console.log(this.props.connection)
+            this.props.connection.setGame(this)
+        }, 0)
     }
 
     componentWillUnmount() {
@@ -210,7 +205,7 @@ class Game extends Component {
         console.log("update Pieces")
         this.setState({
                 pieces: json.data.pieces,
-                nrBoards: json.data.nrPlanes,
+                nrBoards: json.data.nrBoards,
                 boardSize: json.data.boardSize
             }
         )
@@ -295,8 +290,8 @@ class Game extends Component {
                     this.GView = el
                 }}/>
             </Container>
-        );
+        )
     }
 }
 
-export default Game;
+export default connect(mapStateToProps)(Game)
