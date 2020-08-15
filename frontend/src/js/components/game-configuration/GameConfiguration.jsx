@@ -43,7 +43,7 @@ class GameConfiguration extends Component {
             <Container className={"GameConfiguration"}>
                 <Row>
                     <Col md="auto">
-                        <GroupSelector nrGroups={2}/>
+                        <GroupSelector/>
                     </Col>
                     <Col>
                         <Chat/>

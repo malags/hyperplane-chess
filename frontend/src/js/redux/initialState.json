@@ -1,14 +1,18 @@
 {
-  "messages": [],
-  "break_size": 256,
-  "connection": "",
-  "gameId": -1,
-  "player": {
-    "playerId": 0,
-    "groupId": 0,
-    "name": "user"
+  "chat": {
+    "messages": [],
+    "break_size": 256
   },
-  "nrGroups": 2,
-  "players": [],
-  "playersReady": []
+  "connection": "",
+  "gameConfig": {
+    "player": {
+      "playerId": 0,
+      "groupId": 0,
+      "name": "user"
+    },
+    "gameId": -1,
+    "nrGroups": 2,
+    "players": [],
+    "playersReady": []
+  }
 }

@@ -17,11 +17,11 @@ import Container from "react-bootstrap/Container";
 
 const mapStateToProps = (state) => {
     return {
-        player: state.player,
-        playerId: state.player.playerId,
+        player: state.gameConfig.player,
+        playerId: state.gameConfig.player.playerId,
         connection: state.connection,
-        playersReady: state.playersReady,
-        players: state.players
+        playersReady: state.gameConfig.playersReady,
+        players: state.gameConfig.players
     }
 }
 

@@ -8,7 +8,24 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import configureStore from './configureStore'
 
-let initialState = require("./initialState.json")
-export const store = configureStore(initialState)
+import {createBrowserHistory} from 'history'
+import {applyMiddleware, compose, createStore} from 'redux'
+import {routerMiddleware} from 'connected-react-router'
+import createRootReducer from "./reducers.js"
+
+export const history = createBrowserHistory()
+
+export default function configureStore(preloadedState) {
+    const store = createStore(
+        createRootReducer(history), // root reducer with router state
+        preloadedState,
+        compose(
+            applyMiddleware(
+                routerMiddleware(history),
+            ),
+        ),
+    )
+
+    return store
+}

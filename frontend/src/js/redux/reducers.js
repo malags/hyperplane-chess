@@ -9,10 +9,11 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {combineReducers} from "redux";
+import {combineReducers} from 'redux'
+import {connectRouter} from 'connected-react-router'
+
 import {
-    CHAT_SET_NAME,
-    CHAT_SEND,
+    PLAYER_SET_NAME,
     CHAT_GOT,
     SET_CONNECTION,
     SET_GAME_ID,
@@ -36,10 +37,10 @@ const gotMessage = (state, action) => {
 
 const setPlayer = (state, action) => {
     let player = action.player
-    let players = state.players.filter(p => p.playerId != action.player.playerId)
+    let players = state.players.filter(p => p.playerId !== action.player.playerId)
     players.push(action.player)
     // changed player is user
-    if (player.playerId == state.player.playerId) {
+    if (player.playerId === state.player.playerId) {
         return {
             ...state,
             player: action.player,
@@ -55,14 +56,37 @@ const setPlayer = (state, action) => {
     }
 }
 
-
-function reducer(state = initialState, action) {
+function chatReducer(state = initialState.chat, action) {
     switch (action.type) {
         case CHAT_GOT:
             return gotMessage(state, action)
-        case CHAT_SEND:
-            return {...state}
-        case CHAT_SET_NAME:
+        default:
+            return state
+    }
+}
+
+
+function connectionReducer(state = initialState.connection, action) {
+    switch (action.type) {
+        case SET_CONNECTION:
+            return action.connection
+        default:
+            return state
+    }
+}
+
+
+function gameConfigReducer(state = initialState.gameConfig, action) {
+    switch (action.type) {
+        //player config
+        case SET_PLAYER:
+            return setPlayer(state, action)
+        case NEW_PLAYER:
+            return {
+                ...state,
+                player: action.player
+            }
+        case PLAYER_SET_NAME:
             return {
                 ...state,
                 player: {
@@ -70,14 +94,13 @@ function reducer(state = initialState, action) {
                     name: action.name,
                 }
             }
-        case SET_PLAYER:
-            return setPlayer(state, action)
-        case SET_CONNECTION:
-            return {
-                ...state,
-                connection: action.connection
-            }
+        //game config
         case SET_GAME_ID:
+            console.log("SET_GAME_ID")
+            console.log({
+                ...state,
+                gameId: action.gameId
+            })
             return {
                 ...state,
                 gameId: action.gameId
@@ -87,16 +110,17 @@ function reducer(state = initialState, action) {
                 ...state,
                 playersReady: action.playersReady
             }
-        case NEW_PLAYER:
-            return {
-                ...state,
-                player: action.player
-            }
         default:
-            return {...state}
+            return state
     }
 }
 
-const rootReducer = reducer
+const createRootReducer = (history) => combineReducers({
+    chat: chatReducer,
+    connection: connectionReducer,
+    gameConfig: gameConfigReducer,
+    router: connectRouter(history),
+})
 
-export default rootReducer
+
+export default createRootReducer

@@ -26,9 +26,11 @@ const layer = {
     "PIECES": 2
 }
 
+//TODO: fix highlighting broken
+
 const mapStateToProps = (state) => {
     return {
-        player: state.player,
+        player: state.gameConfig.player,
         connection: state.connection
     }
 }
@@ -88,6 +90,7 @@ class Game extends Component {
             console.log(this.props)
             console.log(this.props.connection)
             this.props.connection.setGame(this)
+            this.props.connection.sendGetGameStatus()
         }, 0)
     }
 

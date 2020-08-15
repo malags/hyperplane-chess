@@ -19,7 +19,7 @@ import {setGameIdAction} from "../redux/actions";
 
 const mapStateToProps = (state) => {
     return {
-        gameId: state.gameId
+        gameId: state.gameConfig.gameId
     }
 }
 

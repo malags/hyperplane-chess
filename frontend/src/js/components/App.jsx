@@ -10,33 +10,34 @@
  */
 
 import React, {Component} from "react";
-import {Provider} from "react-redux"
+import {Provider, ReactReduxContext} from "react-redux"
 import ReactDOM from "react-dom";
 
 import Game from "./Game.jsx";
 import NewGameForm from "./NewGameForm.jsx";
-import {BrowserRouter as Router, Route} from "react-router-dom";
+import {Route, Switch} from "react-router-dom";
+import {ConnectedRouter} from 'connected-react-router'
 import NavBar from "./NavBar.jsx";
 import Home from "./Home.jsx";
 import GameConfiguration from "./game-configuration/GameConfiguration.jsx";
-import {render} from 'react-dom';
 
-import store from "../redux/Store";
+import {history} from "../redux/configureStore.js";
+import {store} from "../redux/Store.js";
 
-
-const App = () => (
+ReactDOM.render(
     <Provider store={store}>
-        <Router>
+        <ConnectedRouter history={history}>
             <div className="App">
                 <NavBar/>
-                <Route exact path="/" component={Home}/>
-                <Route path={"/game"} component={Game}/>
-                <Route path={"/new-game"} component={NewGameForm}/>
-                <Route path={"/connect/:gameId"} component={GameConfiguration}/>
+                <Switch>
+                    <Route exact path="/" component={Home}/>
+                    <Route path={"/game"} component={Game}/>
+                    <Route path={"/new-game"} component={NewGameForm}/>
+                    <Route path={"/connect/:gameId"} component={GameConfiguration}/>
+                </Switch>
             </div>
-        </Router>
-    </Provider>
+        </ConnectedRouter>
+    </Provider>,
+    document.getElementById('root')
 )
 
-
-render(<App/>, document.getElementById('root'));

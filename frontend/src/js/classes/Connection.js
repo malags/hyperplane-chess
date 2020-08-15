@@ -9,13 +9,14 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import store from "../redux/Store"
+import {store} from "../redux/Store.js"
 import {
     getAllReadyStatusAction,
     gotMessageAction, newPlayerAction,
     setPlayerAction
 } from "../redux/actions";
 import React from "react";
+import {push} from 'connected-react-router'
 
 /**
  * Connection to the server with websocket
@@ -96,7 +97,7 @@ class Connection {
                 store.dispatch(getAllReadyStatusAction(json.data))
                 break
             case "gameStart":
-                window.location.pathname = "game"
+                store.dispatch(push("/game"))
                 break
             default:
 
@@ -166,8 +167,8 @@ class Connection {
     }
 
     close() {
-        this.socket.close()
         clearInterval(this.keepAliveInterval)
+        this.socket.close()
     }
 }
 

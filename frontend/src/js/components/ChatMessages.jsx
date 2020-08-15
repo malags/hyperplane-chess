@@ -18,10 +18,11 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Container from "react-bootstrap/Container";
 
 const mapStateToProps = (state) => {
+    console.log(state)
     return {
-        name: state.player.name,
-        messages: state.messages,
-        break_size: state.break_size,
+        name: state.gameConfig.player.name,
+        messages: state.chat.messages,
+        break_size: state.chat.break_size,
         connection: state.connection
     }
 }

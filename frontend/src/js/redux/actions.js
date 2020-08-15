@@ -13,7 +13,7 @@
 /*
  * action types
  */
-export const CHAT_SET_NAME = "CHAT_SET_NAME"
+export const PLAYER_SET_NAME = "CHAT_SET_NAME"
 export const SET_PLAYER = "SET_PLAYER"
 export const NEW_PLAYER = "NEW_PLAYER"
 export const CHAT_GOT = "CHAT_GOT"
@@ -28,7 +28,7 @@ export const GET_READY_STATUS = "GET_READY_STATUS"
  */
 
 export function setNameAction(name) {
-    return {type: CHAT_SET_NAME, name}
+    return {type: PLAYER_SET_NAME, name}
 
 }
 

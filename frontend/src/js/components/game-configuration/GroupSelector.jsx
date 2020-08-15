@@ -19,12 +19,12 @@ import {connect} from 'react-redux'
 
 const mapStateToProps = (state) => {
     return {
-        nrGroups: state.nrGroups,
+        nrGroups: state.gameConfig.nrGroups,
         connection: state.connection,
-        players: state.players,
-        name: state.player.name,
-        player: state.player,
-        playersReady: state.playersReady
+        players: state.gameConfig.players,
+        player: state.gameConfig.player,
+        name: state.gameConfig.player.name,
+        playersReady: state.gameConfig.playersReady
     }
 }
 

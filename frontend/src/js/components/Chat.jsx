@@ -22,8 +22,8 @@ import GameReady from "./game-configuration/GameReady.jsx";
 
 function mapStateToProps(state) {
     return {
-        name: state.player.name,
-        player: state.player,
+        player: state.gameConfig.player,
+        name: state.gameConfig.player.name,
         connection: state.connection
     }
 }

@@ -199,7 +199,7 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
         success(
           command = "gameStatus",
           data = Json.obj(
-            "nrPlanes" -> GameService.getNrPlanes(id).get, // has some value because Some(pieces)
+            "nrBoards" -> GameService.getNrPlanes(id).get, // has some value because Some(pieces)
             "boardSize" -> GameService.getBoardSize(id).get, // has some value because Some(pieces)
             "pieces" -> pieces
           )

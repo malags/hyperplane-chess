@@ -16,6 +16,8 @@ import _ from 'lodash-es';
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import {store} from "../redux/Store.js"
+import {push} from 'connected-react-router'
 
 class NewGameForm extends Component {
     url = 'http://localhost:9000/newGame' //window.location.origin + "/newGame"
@@ -76,9 +78,8 @@ class NewGameForm extends Component {
         fetch(this.url, request)
             .then(response => {
                 if (response.status >= 200 && response.status < 300) {
-                    response.json().then(json => this.props.history.push(json.url))
+                    response.json().then(json => store.dispatch(push(json.url)))
                 } else {
-                    console.log(response)
                     response.text().then(error => alert(error))
 
                 }
