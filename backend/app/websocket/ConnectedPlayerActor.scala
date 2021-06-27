@@ -18,6 +18,7 @@ import play.api.Logger
 import play.api.libs.json.{JsError, JsNull, JsSuccess, JsValue, Json}
 import services.{GameBuilderService, GameService}
 import websocket.MatchManager.{ChatMessage, Moved, Ready, SetPlayer, StartGame}
+import websocket.ActorCommand._
 
 /**
  * Actor containing information on the GameId
@@ -51,21 +52,23 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
 
     // initial case
     case value: JsValue =>
-      val command = (value \ "command").getOrElse(Json.toJson("No command in Json")).as[String]
-      logger.info(command)
+      val command = ActorCommand.toCommand(
+        (value \ "command").getOrElse(Json.toJson("No command in Json")).as[String]
+      )
+      logger.info(command.toString)
 
       command match {
-        case "ping" => out ! Json.obj("status" -> "pong")
-        case "message" => sendMessage(value)
-        case "getAvailableMoves" => availableMovesAction(value)
-        case "submitMove" => submitMoveAction(value)
-        case "getGameStatus" => gameStatusAction()
-        case "ready" => setReady(value)
-        case "setPlayer" => setPlayer(value)
-        case "newPlayer" => newPlayer()
-        case "getAllPlayers" => getAllPlayers()
-        case "getAllReadyStatus" => out ! getAllReadyStatusJsValue()
-        case unhandled => logger.warn(s"unhandled message $unhandled")
+        case PING => out ! Json.obj("status" -> "pong")
+        case MESSAGE => sendMessage(value)
+        case GET_AVAILABLE_MOVES => availableMovesAction(value)
+        case SUBMIT_MOVE => submitMoveAction(value)
+        case GET_GAME_STATUS => gameStatusAction()
+        case READY => setReady(value)
+        case SET_PLAYER => setPlayer(value)
+        case NEW_PLAYER => newPlayer()
+        case GET_ALL_PLAYERS => getAllPlayers()
+        case GET_ALL_READY_STATUS => out ! getAllReadyStatusJsValue()
+        case UNKNOWN => logger.warn(s"unhandled message $command")
       }
 
     case default: Any => logger.error(s"unhandled in Receive $default")

@@ -116,7 +116,7 @@ case class BoardConfigurator(piecesPosition: List[String]) {
    * @param players list to append to itself
    * @return players appended to itself n times
    */
-  private def nTimes(n: Int, players: Array[Player]) = {
+  private def nTimes(n: Int, players: Array[Player]): Seq[Player] = {
     var result = players
     var times = n
     while (times > 1) {
