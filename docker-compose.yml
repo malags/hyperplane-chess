@@ -1,0 +1,17 @@
+version: '3'
+services:
+
+  web:
+    build: ./frontend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./frontend/src:/app/src
+    hostname: frontend
+
+  scala-service:
+    build: ./backend
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./backend:/backend
