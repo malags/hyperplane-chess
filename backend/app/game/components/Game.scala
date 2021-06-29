@@ -37,7 +37,7 @@ class Game(players: Array[Player], nrPlanes: Int, boardSize: Int, movementFile: 
     boards.pieceAt(position) match {
       case Some(piece) =>
         // check game turn with piece ownership
-        if (turnId != piece.player.playerId)
+        if (getPlayerTurnId() != piece.player.playerId)
           Set.empty[Point3D]
         // owner can move
         else
@@ -53,6 +53,12 @@ class Game(players: Array[Player], nrPlanes: Int, boardSize: Int, movementFile: 
    * @return the piece at the given position
    */
   def pieceAt(position: Point3D): Option[Piece] = boards.pieceAt(position)
+
+  /**
+   * Get PlayerId for current turn
+   * @return
+   */
+  def getPlayerTurnId(): Int = turnId
 
 
   /**

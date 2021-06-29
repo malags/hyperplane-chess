@@ -91,6 +91,23 @@ object GameService {
     }
   }
 
+  /**
+   * Validate the pass action with respect to game turn and player
+   * then pass the turn if possible
+   * @param gameId ID of the game as generated in newGame
+   * @param player player submitting the move
+   * @return true if the turn was passed, false otherwise
+   */
+  def passTurn(gameId: Long, player: Player): Boolean = {
+    mapIdToGame.get(gameId) match {
+      case None => false
+      case Some(game) =>
+        if (game.getPlayerTurnId() != player.playerId) return false
+        game.endTurn()
+        true
+    }
+  }
+
 
   /**
    * Get the Set of moves the player could make if he were to move the piece at pos
