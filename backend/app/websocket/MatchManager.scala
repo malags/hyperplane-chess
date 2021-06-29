@@ -81,5 +81,3 @@ object MatchManager {
   case class StartGame(id: Long)
 
 }
-
-//TODO: possibly add linked service to periodically check empty Games (created but not joined) and delete them

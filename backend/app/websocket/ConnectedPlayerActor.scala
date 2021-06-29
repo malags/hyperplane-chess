@@ -47,8 +47,6 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
     case SetPlayer(_, response) => out ! response
     case StartGame(_) => success(command = "gameStart", data = JsNull)
 
-    //TODO: build on ready
-
     // initial case
     case value: JsValue =>
       val command = ActorCommand.toCommand(
