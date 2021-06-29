@@ -13,7 +13,7 @@ package websocket
 object ActorCommand extends Enumeration {
   type ActorCommand = Value
   val PING, MESSAGE, GET_AVAILABLE_MOVES, SUBMIT_MOVE, GET_GAME_STATUS, READY, SET_PLAYER, NEW_PLAYER,
-  GET_ALL_PLAYERS, GET_ALL_READY_STATUS, UNKNOWN = Value
+  GET_ALL_PLAYERS, GET_ALL_READY_STATUS, PASS, UNKNOWN = Value
 
   def toCommand(command: String): ActorCommand = {
     command match {
@@ -27,6 +27,7 @@ object ActorCommand extends Enumeration {
       case "newPlayer" => NEW_PLAYER
       case "getAllPlayers" => GET_ALL_PLAYERS
       case "getAllReadyStatus" => GET_ALL_READY_STATUS
+      case "pass" => PASS
       case _ => UNKNOWN
     }
   }

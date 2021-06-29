@@ -64,14 +64,15 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
         case SET_PLAYER => setPlayer(value)
         case NEW_PLAYER => newPlayer()
         case GET_ALL_PLAYERS => getAllPlayers()
-        case GET_ALL_READY_STATUS => out ! getAllReadyStatusJsValue()
+        case GET_ALL_READY_STATUS => out ! getAllReadyStatusJsValue
+        case PASS => passAction(value)
         case UNKNOWN => logger.warn(s"unhandled message $command")
       }
 
     case default: Any => logger.error(s"unhandled in Receive $default")
   }
 
-  private def getAllReadyStatusJsValue(): JsValue = {
+  private def getAllReadyStatusJsValue: JsValue = {
     Json.obj(
       "status" -> "ok",
       "command" -> "getAllReadyStatus",
@@ -93,11 +94,9 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
       Json.fromJson[Player]((request \ "data" \ "player").get),
       Json.fromJson[Boolean]((request \ "data" \ "ready").get)
     ) match {
-      case (JsSuccess(player, _), JsSuccess(ready, _)) => {
+      case (JsSuccess(player, _), JsSuccess(ready, _)) =>
         GameBuilderService.setReady(id, player, ready)
-        val response: JsValue = getAllReadyStatusJsValue()
-        manager ! MatchManager.Ready(id, response)
-      }
+        manager ! MatchManager.Ready(id, getAllReadyStatusJsValue)
       case _ => failed("setReady")
     }
   }
@@ -105,7 +104,7 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
   private def setPlayer(request: JsValue): Unit = {
     val data = (request \ "data").get
     Json.fromJson[Player](data) match {
-      case JsSuccess(player, _) => {
+      case JsSuccess(player, _) =>
         GameBuilderService.setPlayer(id, player)
         val response: JsValue = Json.obj(
           "status" -> "ok",
@@ -113,7 +112,6 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
           "data" -> data
         )
         manager ! MatchManager.SetPlayer(id, response)
-      }
       case JsError(_) => failed("setPlayer")
     }
   }
@@ -121,6 +119,18 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
   private def sendMessage(request: JsValue): Unit = {
     logger.info("sendMessage")
     manager ! MatchManager.ChatMessage(id, request)
+  }
+
+  private def sendServerMessage(message: String): Unit = {
+    logger.info("sendServerMessage")
+    manager ! MatchManager.ChatMessage(id, Json.obj(
+      "command" -> "message",
+      "data" -> Json.obj(
+        "id" -> "server",
+        "content" -> message,
+        "sender" -> "Server"
+      )
+    ))
   }
 
   private def newPlayer(): Unit = {
@@ -140,6 +150,17 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
       "status" -> "failed",
       "command" -> "newPlayer"
     )
+  }
+
+  private def passAction(request: JsValue): Unit = {
+    val data = (request \ "data").get
+    val playerJs = Json.fromJson[Player]((data \ "player").get)
+    playerJs match {
+      case JsSuccess(player, _) =>
+        GameService.passTurn(id, player)
+        sendServerMessage("Passed Turn.")
+      case _ =>
+    }
   }
 
   /**
