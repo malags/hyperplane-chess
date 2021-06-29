@@ -1,3 +1,13 @@
+/*
+ * Copyright © 2021 Stefano Malagò
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package game
 
 import game.components.Facing.Facing
@@ -8,7 +18,7 @@ import play.api.libs.json.{JsValue, Json}
 
 class BoardConfiguratorTest extends PlaySpec {
 
-  val player: Player = Player(0, 0)
+  val player: Player = Player(0, 0, "")
   val type_t: Type = Type("")
   val facing: Facing = Facing.DOWN
 
@@ -23,7 +33,7 @@ class BoardConfiguratorTest extends PlaySpec {
           ]
          }"""
   )
-  val piecesPosition: String = """NA,NA,NA,TEST_PIECE,TEST_PIECE,NA,NA,NA"""
+  val piecesPosition: List[String] = List("", "", "", "TEST_PIECE", "TEST_PIECE", "", "", "")
   val movementManager: MovementManager = MovementManager(nrPlanes = 2, boardSize = 4, jsonString)
   val boards: Boards = Boards(movementManager)
 
@@ -36,7 +46,7 @@ class BoardConfiguratorTest extends PlaySpec {
     "verify correct format odd" in {
       val movementManager: MovementManager = MovementManager(nrPlanes = 2, boardSize = 5, jsonString)
       val boards: Boards = Boards(movementManager)
-      val piecesPosition: String = """NA,NA,NA,NA,TEST_PIECE,TEST_PIECE,NA,NA,NA,NA"""
+      val piecesPosition: List[String] = List("", "", "", "", "TEST_PIECE", "TEST_PIECE", "", "", "", "")
       val boardConfigurator: BoardConfigurator = BoardConfigurator(piecesPosition = piecesPosition)
 
       boardConfigurator.verify(boards = boards) mustBe true
@@ -52,10 +62,11 @@ class BoardConfiguratorTest extends PlaySpec {
     }
 
     "initialize the board" in {
-      val players = Array(Player(0, 0), Player(1, 1))
+      val players = Array(Player(0, 0, "p1"), Player(1, 1, "p2"))
       val movementManager: MovementManager = MovementManager(nrPlanes = 2, boardSize = 6, jsonString)
       val boards: Boards = Boards(movementManager)
-      val piecesPosition: String = """NA,NA,TEST_PIECE,TEST_PIECE,NA,NA,NA,TEST_PIECE,TEST_PIECE,NA,NA,NA"""
+
+      val piecesPosition: List[String] = List("", "", "TEST_PIECE", "TEST_PIECE", "", "", "", "TEST_PIECE", "TEST_PIECE", "", "", "", "", "", "", "", "", "")
       val boardConfigurator: BoardConfigurator = BoardConfigurator(piecesPosition = piecesPosition)
       boardConfigurator.initBoards(boards, players)
       /*

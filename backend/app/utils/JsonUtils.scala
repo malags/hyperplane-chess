@@ -8,11 +8,28 @@
  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package game.components
+package utils
+
+import game.components.{Facing, Piece, Player, Point3D, Type}
+import play.api.libs.json.{Json, Reads, Writes}
 
 /**
- *
- * @param playerId number representing the player
- * @param groupId  number representing the group of the player
+ * Object containing Readers and Writers for the Game classes to allow conversion between Json and the specific class
+ * use import utils.JsonUtils._
  */
-case class Player(playerId: Int, groupId: Int, name: String)
+object JsonUtils {
+  implicit val playerReads: Reads[Player] = Json.reads[Player]
+  implicit val playerWrites: Writes[Player] = Json.writes[Player]
+
+  implicit val point3DReads: Reads[Point3D] = Json.reads[Point3D]
+  implicit val point3DWrites: Writes[Point3D] = Json.writes[Point3D]
+
+  implicit val typeReads: Reads[Type] = Json.reads[Type]
+  implicit val typeWrites: Writes[Type] = Json.writes[Type]
+
+  implicit val facingReads: Reads[Facing.Value] = Reads.enumNameReads(Facing)
+  implicit val facingWrites: Writes[Facing.Value] = Writes.enumNameWrites
+
+  implicit val pieceReads: Reads[Piece] = Json.reads[Piece]
+  implicit val pieceWrites: Writes[Piece] = Json.writes[Piece]
+}

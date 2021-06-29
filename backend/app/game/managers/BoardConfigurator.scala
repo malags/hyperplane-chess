@@ -1,10 +1,20 @@
+/*
+ * Copyright © 2021 Stefano Malagò
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package game.managers
 
 import game.components.{Boards, Facing, Piece, Player, Point3D, Type}
 
 import scala.util.Random
 
-case class BoardConfigurator(piecesPosition: String) {
+case class BoardConfigurator(piecesPosition: List[String]) {
 
   /**
    * Verify that the piecesPosition String has valid format and content
@@ -15,16 +25,15 @@ case class BoardConfigurator(piecesPosition: String) {
   def verify(boards: Boards): Boolean = {
     // half board round down
     val nrSpots: Int = boards.movementManager.boardSize * (boards.movementManager.boardSize / 2)
-    val pieces: Array[String] = piecesPosition.split(",").map(_.trim)
 
     val validTypes = boards.movementManager.movementMap.keySet
     var typesFound = Set.empty[Type]
 
-    for (piece <- pieces)
-      if (piece != "NA")
+    for (piece <- piecesPosition)
+      if (piece != "")
         typesFound = typesFound + Type(piece)
 
-    pieces.length == nrSpots && validTypes.equals(typesFound)
+    piecesPosition.length == nrSpots && validTypes.equals(typesFound)
   }
 
   def initBoards(boards: Boards, players: Array[Player]): Boolean = {
@@ -74,12 +83,11 @@ case class BoardConfigurator(piecesPosition: String) {
    * @param facing  the direction the player is facing
    */
   private def setPlayer(boards: Boards, boardId: Int, player: Player, facing: Facing.Value): Unit = {
-    val pieces: Array[String] = piecesPosition.split(",").map(_.trim)
     val boardSize: Int = boards.movementManager.boardSize
 
-    for (index <- pieces.indices) {
-      if (pieces(index) != "NA") {
-        val pieceType: Type = Type(pieces(index))
+    for (index <- piecesPosition.indices) {
+      if (piecesPosition(index) != "") {
+        val pieceType: Type = Type(piecesPosition(index))
 
         // size = 8:   7 -> (7,0), 12 -> (4,1)
         val x: Int = index % boardSize
@@ -107,7 +115,7 @@ case class BoardConfigurator(piecesPosition: String) {
    * @param players list to append to itself
    * @return players appended to itself n times
    */
-  private def nTimes(n: Int, players: Array[Player]) = {
+  private def nTimes(n: Int, players: Array[Player]): Seq[Player] = {
     var result = players
     var times = n
     while (times > 1) {

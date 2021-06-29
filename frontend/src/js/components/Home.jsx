@@ -8,11 +8,14 @@
  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package game.components
+import React from "react";
+import Container from "react-bootstrap/Container";
 
-/**
- *
- * @param playerId number representing the player
- * @param groupId  number representing the group of the player
- */
-case class Player(playerId: Int, groupId: Int, name: String)
+const Home = () => {
+    return (
+        <Container className={"Home"}>
+            <h1>Home</h1>
+        </Container>
+    )
+}
+export default Home

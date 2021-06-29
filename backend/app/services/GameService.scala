@@ -1,3 +1,13 @@
+/*
+ * Copyright © 2021 Stefano Malagò
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package services
 
 
@@ -26,17 +36,23 @@ object GameService {
    * @param piecesPosition CSV (no header) representing the starting position of the boards
    * @return ID of the Game
    */
-  def newGame(players: Array[Player], nrPlanes: Int, boardSize: Int, movementFile: JsValue, piecesPosition: String): Long = {
+  def newGame(players: Array[Player], nrPlanes: Int, boardSize: Int, movementFile: JsValue, piecesPosition: List[String], id: Long): Long = {
 
     val game: Game = new Game(players, nrPlanes, boardSize, movementFile)
     val boardConfigurator: BoardConfigurator = BoardConfigurator(piecesPosition)
 
     if (!game.init(boardConfigurator)) throw new IllegalArgumentException("Invalid format for pieces position")
 
-    val id = n.getAndIncrement()
     mapIdToGame.put(id, game)
     id
   }
+
+  /**
+   * Book an ID for a Game
+   *
+   * @return the ID of the Game
+   */
+  def requestId(): Long = n.getAndIncrement()
 
 
   /**
@@ -86,7 +102,7 @@ object GameService {
    */
   def getAvailableMoves(gameId: Long, pos: Point3D, player: Player): Set[Point3D] = {
     mapIdToGame.get(gameId) match {
-      case None => null
+      case None => Set.empty[Point3D]
       case Some(game) =>
         game.pieceAt(pos) match {
           case None => Set.empty[Point3D]
