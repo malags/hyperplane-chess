@@ -1,0 +1,13 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+
+
+# scala
+*.class
+*.log
+
+target/
+
+# Frontend
+frontend/node_modules
