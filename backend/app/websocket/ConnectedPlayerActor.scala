@@ -14,7 +14,7 @@ import akka.actor.{Actor, ActorRef, Props}
 import utils.JsonUtils._
 import game.components.{Player, Point3D}
 import play.api.Logger
-import play.api.libs.json.{JsError, JsNull, JsSuccess, JsValue, Json}
+import play.api.libs.json.{JsError, JsNull, JsResult, JsSuccess, JsValue, Json}
 import services.{GameBuilderService, GameService}
 import websocket.MatchManager.{ChatMessage, Moved, Ready, SetPlayer, StartGame}
 import websocket.ActorCommand._
@@ -66,6 +66,7 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
         case GET_ALL_PLAYERS => getAllPlayers()
         case GET_ALL_READY_STATUS => out ! getAllReadyStatusJsValue
         case PASS => passAction(value)
+        case RESIGN => resignAction(value)
         case UNKNOWN => logger.warn(s"unhandled message $command")
       }
 
@@ -152,16 +153,31 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
     )
   }
 
-  private def passAction(request: JsValue): Unit = {
+  private def getPlayer(request: JsValue): JsResult[Player] = {
     val data = (request \ "data").get
-    val playerJs = Json.fromJson[Player]((data \ "player").get)
-    playerJs match {
+    Json.fromJson[Player]((data \ "player").get)
+  }
+
+
+  private def passAction(request: JsValue): Unit = {
+    getPlayer(request) match {
       case JsSuccess(player, _) =>
         GameService.passTurn(id, player)
         sendServerMessage("Passed Turn.")
       case _ =>
     }
   }
+
+
+  private def resignAction(request: JsValue): Unit = {
+    getPlayer(request) match {
+      case JsSuccess(player, _) =>
+        GameService.setDefeatedPlayer(id, player)
+        sendServerMessage(s"Player ${player.name} is defeated.")
+      case _ =>
+    }
+  }
+
 
   /**
    * Manipulate message, notify client for moved
@@ -245,7 +261,7 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
   /**
    * send a Failed notification to websocket with given command
    *
-   * @param command
+   * @param command command of the failed request
    */
   private def failed(command: String): Unit = out ! Json.obj("status" -> "failed", "command" -> command)
 

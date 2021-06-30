@@ -23,8 +23,8 @@ import play.api.libs.json.JsValue
 class Game(players: Array[Player], nrPlanes: Int, boardSize: Int, movementFile: JsValue) {
   val movementManager: MovementManager = MovementManager(nrPlanes = nrPlanes, boardSize = boardSize, movementJson = movementFile)
   val boards: Boards = Boards(movementManager = movementManager)
-  val nrPlayers: Int = players.length
   var turnId: Int = 0
+  var playersAlive: Seq[Int] = Seq.range[Int](0, players.length)
 
 
   /**
@@ -37,7 +37,7 @@ class Game(players: Array[Player], nrPlanes: Int, boardSize: Int, movementFile: 
     boards.pieceAt(position) match {
       case Some(piece) =>
         // check game turn with piece ownership
-        if (getPlayerTurnId() != piece.player.playerId)
+        if (getPlayerTurnId != piece.player.playerId)
           Set.empty[Point3D]
         // owner can move
         else
@@ -58,13 +58,27 @@ class Game(players: Array[Player], nrPlanes: Int, boardSize: Int, movementFile: 
    * Get PlayerId for current turn
    * @return
    */
-  def getPlayerTurnId(): Int = turnId
+  def getPlayerTurnId: Int = playersAlive(turnId)
 
 
   /**
    * update turnId to match next player
    */
-  def endTurn(): Unit = turnId = (turnId + 1) % nrPlayers
+  def endTurn(): Unit = turnId = (turnId + 1) % playersAlive.length
+
+
+  /**
+   * Set player as defeated (will skip turns)
+   * @param player player that resigns
+   */
+  def setDefeatedPlayer(player: Player): Unit = {
+    val currentPlayerTurn = getPlayerTurnId
+    playersAlive = playersAlive.filter(p => p != player.playerId)
+
+    // fix index issue if last player in playersAlive is defeated
+    if (currentPlayerTurn == player.playerId && turnId == playersAlive.length - 1) turnId = 0
+
+  }
 
 
   def init(boardConfigurator: BoardConfigurator): Boolean = {
