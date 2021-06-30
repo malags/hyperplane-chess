@@ -102,8 +102,24 @@ object GameService {
     mapIdToGame.get(gameId) match {
       case None => false
       case Some(game) =>
-        if (game.getPlayerTurnId() != player.playerId) return false
+        if (game.getPlayerTurnId != player.playerId) return false
         game.endTurn()
+        true
+    }
+  }
+
+
+  /**
+   *
+   * @param gameId ID of the game as generated in newGame
+   * @param player player defeated the move
+   * @return true if player was set as defeated, false otherwise
+   */
+  def setDefeatedPlayer(gameId: Long, player: Player): Boolean = {
+    mapIdToGame.get(gameId) match {
+      case None => false
+      case Some(game) =>
+        game.setDefeatedPlayer(player)
         true
     }
   }
