@@ -20,7 +20,7 @@ import websocket.MatchManager.{ChatMessage, Moved, NewClient, Ready, Remove, Set
  * MatchManager manages groups of ConnectedPlayerActors (Matches) and notifies them when
  */
 class MatchManager extends Actor {
-  val logger = Logger(this.getClass)
+  val logger: Logger = Logger(this.getClass)
   var participants: Map[Long, Set[ActorRef]] = Map.empty[Long, Set[ActorRef]].withDefaultValue(Set.empty[ActorRef])
 
   private def addStatusOk(request: JsValue): JsObject = request.as[JsObject] + ("status" -> Json.toJson("ok"))
@@ -30,16 +30,16 @@ class MatchManager extends Actor {
       _ ! ChatMessage(id, addStatusOk(message))
     )
 
-    case NewClient(id: Long, client: ActorRef) => {
+    case NewClient(id: Long, client: ActorRef) =>
       val clients = participants.apply(id) + client
       participants = participants + (id -> clients)
       if (!GameStarterService.exists(id)) GameStarterService.newGamerStarter(id, self)
-    }
-    case moved@Moved(id: Long, move: JsValue) => {
+
+    case moved@Moved(id: Long, move: JsValue) =>
       logger.info(s"moved $move")
       participants.apply(id).foreach(_ ! moved)
-    }
-    case Remove(id: Long, client: ActorRef) => {
+
+    case Remove(id: Long, client: ActorRef) =>
       val clients = participants.apply(id).filter(_ != client)
       participants = participants + (id -> clients)
       logger.info("One player disconnected")
@@ -48,13 +48,10 @@ class MatchManager extends Actor {
       //        GameService.remove(id)
       //        logger.info(s"deleted game $id")
       //      }
-    }
 
-    case ready@Ready(id: Long, _) => {
+    case ready@Ready(id: Long, _) =>
       // inform clients
       participants.apply(id).foreach(_ ! ready)
-      // if can build, do so (maybe)
-    }
 
     case setPlayer@SetPlayer(id: Long, _) => participants.apply(id).foreach(_ ! setPlayer)
 

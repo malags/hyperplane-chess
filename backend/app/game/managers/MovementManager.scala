@@ -54,9 +54,7 @@ case class MovementManager(nrPlanes: Int, boardSize: Int, movementJson: JsValue)
             val move = moves.next().split(",")
             moveset = moveset :+ convertToDirection(x = move(0), y = move(1), z = move(2))
           }
-          movementMap = movementMap + (
-            Type(piece.name) -> moveset.toArray
-            )
+          movementMap = movementMap + (Type(piece.name) -> moveset.toArray)
 
         })
       case e: JsError => throw new IllegalArgumentException("Errors: " + JsError.toJson(e).toString())

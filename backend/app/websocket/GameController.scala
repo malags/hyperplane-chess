@@ -17,11 +17,11 @@ import play.api.Logger
 import play.api.libs.json.{JsLookupResult, JsValue, Json}
 import play.api.libs.streams.ActorFlow
 import play.api.mvc._
-import services.{GameBuilderService}
+import services.GameBuilderService
 
 class GameController @Inject()(cc: ControllerComponents)(implicit system: ActorSystem, mat: Materializer)
   extends AbstractController(cc) {
-  val logger = Logger(this.getClass)
+  val logger: Logger = Logger(this.getClass)
 
   /**
    * MatchManager: it manages all matches, a Match is a Game with ConnectedPlayerActors
@@ -45,7 +45,7 @@ class GameController @Inject()(cc: ControllerComponents)(implicit system: ActorS
     Redirect(s"/connect/$id")
   }
 
-  def socket(id: Long): WebSocket = WebSocket.accept[JsValue, JsValue] { request =>
+  def socket(id: Long): WebSocket = WebSocket.accept[JsValue, JsValue] { _ =>
     ActorFlow.actorRef { out: ActorRef =>
       ConnectedPlayerActor.props(out, manager, id)
     }

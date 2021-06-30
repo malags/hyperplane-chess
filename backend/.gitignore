@@ -1,6 +1,9 @@
 # MacOS
 .DS_Store
 
+# local configuration IDE
+.bsp
+
 logs
 project/project
 project/target
