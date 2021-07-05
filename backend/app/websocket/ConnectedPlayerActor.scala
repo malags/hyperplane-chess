@@ -172,8 +172,7 @@ class ConnectedPlayerActor(out: ActorRef, manager: ActorRef, id: Long) extends A
   private def resignAction(request: JsValue): Unit = {
     getPlayer(request) match {
       case JsSuccess(player, _) =>
-        GameService.setDefeatedPlayer(id, player)
-        sendServerMessage(s"Player ${player.name} is defeated.")
+        if (GameService.setDefeatedPlayer(id, player)) sendServerMessage(s"Player ${player.name} is defeated.")
       case _ =>
     }
   }
